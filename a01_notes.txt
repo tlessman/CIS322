@@ -1,0 +1,20 @@
+#CIS 322 resources
+#a01
+#sites I found useful
+https://www.panix.com/~elflord/unix/bash-tute.html #intro tutorial
+http://ryanstutorials.net/linuxtutorial/cheatsheet.php #command list
+https://www.youtube.com/watch?v=He-5BpUGSag #using vim editor
+https://wiki.postgresql.org/wiki/Working_with_Git #use git clone command
+https://github.com/postgres/postgres #location of clone url
+http://www.thegeekstuff.com/2012/07/wget-curl/ #how to use curl
+https://httpd.apache.org/download.cgi #location of apache src
+http://stackoverflow.com/questions/6212219/passing-parameters-to-a-bash-function #functions and parameters
+https://www.youtube.com/watch?v=E8TXME3bzNs using git between users
+
+# use rm -r <dir> to recursive delete directory
+# launch script using ./<filename>
+# give permision using chmod +x <filename>
+
+? how do i get where dev can execute script?
+? how will i deliver script to dev (curl?)
+? is it necessary for me to mess with ports / ssh? 
