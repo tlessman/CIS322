@@ -1,3 +1,4 @@
+echo $1
 echo " "
 echo '||| OSNAP Daemon Tool |||'
 echo " "
@@ -15,9 +16,21 @@ echo ' '
 echo 'Tool will configure and install PostgreSQL...'
 echo 'CONFIGURING...'
 cd postgres
-./configure --prefix=/$home/installed
+./configure --prefix=$1
+echo 'Preparing...'
+make
+echo 'Installing'
+make install
+cd ..
+echo 'DONE'
+cd httpd-2.4.25
+echo 'Tool will configure and install Apache...'
+echo 'CONFIGURING...'
+cd 
+./configure --prefix=$1
 echo 'Preparing...'
 make
 echo 'Installing'
 make install
 echo 'DONE'
+
