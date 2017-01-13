@@ -13,6 +13,9 @@ echo 'UNPACKING...'
 tar -xjf httpd-2.4.25.tar.bz2
 echo 'DONE'
 echo ' '
+echo ' '
+echo ' '
+
 echo 'Tool will configure and install PostgreSQL...'
 echo 'CONFIGURING...'
 cd postgres
@@ -23,10 +26,13 @@ echo 'Installing'
 make install
 cd ..
 echo 'DONE'
+echo ' '
+echo ' '
+echo ' '
+
 cd httpd-2.4.25
 echo 'Tool will configure and install Apache...'
 echo 'CONFIGURING...'
-cd 
 ./configure --prefix=$1
 echo 'Preparing...'
 make
