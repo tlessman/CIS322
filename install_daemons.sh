@@ -11,3 +11,13 @@ curl -# -O https://www-eu.apache.org/dist//httpd/httpd-2.4.25.tar.bz2
 echo 'UNPACKING...'
 tar -xjf httpd-2.4.25.tar.bz2
 echo 'DONE'
+echo ' '
+echo 'Tool will configure and install PostgreSQL...'
+echo 'CONFIGURING...'
+cd postgres
+./configure --prefix=/$home/installed
+echo 'Preparing...'
+make
+echo 'Installing'
+make install
+echo 'DONE'
