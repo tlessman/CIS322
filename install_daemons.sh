@@ -8,6 +8,16 @@ echo " "
 echo 'Tool is downloading assets...'
 echo 'DOWNLOADING Postgres'
 git clone https://github.com/postgres/postgres.git
+echo ' '
+
+git branch -r
+echo ' '
+echo ' '
+
+git checkout -b REL9_5_STABLE origin/REL9_5_STABLE
+echo ' '
+echo ' '
+
 
 echo 'DONE'
 
@@ -22,11 +32,11 @@ make install
 echo ' '
 echo ' '
 
-git branch -r
+#git branch -r
 echo ' '
 echo ' '
 
-git checkout -b REL9_5_STABLE origin/REL9_5_STABLE
+#git checkout -b REL9_5_STABLE origin/REL9_5_STABLE
 echo ' '
 echo ' '
 
