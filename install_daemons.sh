@@ -20,8 +20,8 @@ echo 'Preparing...'
 make
 echo 'Installing'
 make install
-echo git status #temp
-echo git branch #temp
+git status #temp
+git branch #temp
 cd ..
 echo 'DONE'
 echo ' '
