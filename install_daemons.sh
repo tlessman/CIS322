@@ -19,7 +19,7 @@ make
 echo 'Installing'
 make install
 git branch -r
-git checkout REL9_5_STABLE origin/REL9_5_STABLE
+git checkout -b REL9_5_STABLE origin/REL9_5_STABLE
 git status #temp
 git branch #temp
 cd ..
