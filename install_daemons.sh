@@ -8,6 +8,8 @@ echo " "
 echo 'Tool is downloading assets...'
 echo 'DOWNLOADING Postgres'
 git clone https://github.com/postgres/postgres.git
+git branch -r
+git checkout REL9_5_STABLE origin/REL9_5_STABLE
 echo 'DONE'
 
 echo 'Tool will configure and install PostgreSQL...'
@@ -18,6 +20,8 @@ echo 'Preparing...'
 make
 echo 'Installing'
 make install
+echo git status #temp
+echo git branch #temp
 cd ..
 echo 'DONE'
 echo ' '
