@@ -5,7 +5,7 @@ echo " "
 
 # this tool will download, configure, and install Postgres 2.9.x and Apache httpd 2.4.25
 
-echo 'Tool is downloading assets...'
+
 echo 'DOWNLOADING Postgres'
 git clone https://github.com/postgres/postgres.git
 echo ' '
@@ -38,15 +38,6 @@ echo ' '
 
 git checkout -b REL9_5_STABLE origin/REL9_5_STABLE
 echo ' '
-echo ' '
-
-git status #temp
-echo ' '
-echo ' '
-
-git branch #temp
-echo ' '
-echo ' '
 
 echo 'CONFIGURING...'
 cd postgres
@@ -57,20 +48,8 @@ echo 'Installing'
 make install
 echo ' '
 echo ' '
-
-git status #temp
 echo ' '
-echo ' '
-
-git branch #temp
-echo ' '
-echo ' '
-
 cd ..
-/$1/bin/psql -V #temp
-echo ' '
-echo ' '
-
 echo 'DONE'
 echo ' '
 
