@@ -10,11 +10,11 @@ echo 'DOWNLOADING Postgres'
 git clone https://github.com/postgres/postgres.git
 echo ' '
 
-git branch -r
+#git branch -r
 echo ' '
 echo ' '
 
-git checkout -b REL9_5_STABLE origin/REL9_5_STABLE
+#git checkout -b REL9_5_STABLE origin/REL9_5_STABLE
 echo ' '
 echo ' '
 
@@ -32,11 +32,29 @@ make install
 echo ' '
 echo ' '
 
-#git branch -r
+git branch -r
 echo ' '
 echo ' '
 
-#git checkout -b REL9_5_STABLE origin/REL9_5_STABLE
+git checkout -b REL9_5_STABLE origin/REL9_5_STABLE
+echo ' '
+echo ' '
+
+git status #temp
+echo ' '
+echo ' '
+
+git branch #temp
+echo ' '
+echo ' '
+
+echo 'CONFIGURING...'
+cd postgres
+./configure --prefix=$1
+echo 'Preparing...'
+make
+echo 'Installing'
+make install
 echo ' '
 echo ' '
 
