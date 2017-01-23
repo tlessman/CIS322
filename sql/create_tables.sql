@@ -1,6 +1,6 @@
 /*Asset Tables*/
 create table assets ( asset_pk serial, product_fk int, asset_tag varchar(16), description varchar(64), alt_description(64));
-create table products ( product_pk serial, vendor varchar(16, description varchar(64), alt_description(64));
+create table products ( product_pk serial, vendor varchar(16), description varchar(64), alt_description(64));
 create table vehicles ( vehicle_pk serial, asset_fk int);
 create table facilities ( facility_pk serial, fcode varchar(8), common_name varchar(32), location varchar(100));
 create table asset_at ( asset_fk int, facility_fk int, arrive_dt timestamp, depart_dt timestamp);
