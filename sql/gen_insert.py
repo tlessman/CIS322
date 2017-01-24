@@ -18,7 +18,9 @@ csv_data = csv.reader("osnap_legacy/.security_compartments.csv")
 rows = csv_data.split('\n')
 first_row = next(csv_data)
 for row in rows:
-    cur.execute(insert into compartments (abbrv, comment);)
+    cur.execute("insert into compartments (abbrv, comment) values (%s, %s);")
+
+#insert into compartments (abbrv, comment) values ($V1, $V2);
 
 cur.commit()
 
