@@ -12,6 +12,8 @@ import sys
 conn = psycopg2.connect( dbname = 'lost', host = '127.0.0.1', port = 5432)
 cur = conn.cursor()
 
+"""SECURITY TABLES"""
+
 #access file compartments
 with open('osnap_legacy/security_compartments.csv', 'r') as f:
     csv_data = csv.reader(f)
@@ -34,6 +36,7 @@ with open('osnap_legacy/security_levels.csv', 'r') as f:
 #insert into compartments (abbrv, comment) values ($V1, $V2);
 conn.commit()
 
+"""ASSET TABLES"""
 
 #access file products 
 with open('osnap_legacy/product_list.csv', 'r') as f:
@@ -48,13 +51,48 @@ with open('osnap_legacy/product_list.csv', 'r') as f:
 conn.commit()
 
 #access asset files 
-with open('osnap_legacy/DC_inventory.csv', 'r') as f:
-    csv_data = csv.DictReader(f)
+with open('osnap_legacy/DC_inventory.csv', 'r') as fa:
+    with open('osnap_legacy/HQ_inventory.csv', 'r') as fb:
+        with open('osnap_legacy/MB005_inventory.csv', 'r') as fc:
+            with open('osnap_legacy/NC_inventory.csv', 'r') as fd:
+                with open('osnap_legacy/SPNV_inventory.csv', 'r') as fe:
+ 
+                    csv_data = csv.DictReader(fe)
+                    #v = cur.execute("select product_fk from products where products_pk is not null")
+                    for rows in csv_data:
+                        t = (rows["asset tag"], rows["product"])
+                        cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
+
+                csv_data = csv.DictReader(fd)
+                #v = cur.execute("select product_fk from products where products_pk is not null")
+                for rows in csv_data:
+                    t = (rows["asset_tag"], rows["product"])
+                    cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
+
+            csv_data = csv.DictReader(fc)
+            #v = cur.execute("select product_fk from products where products_pk is not null")
+            for rows in csv_data:
+                t = (rows["asset_tag"], rows["product"])
+                cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
+
+        csv_data = csv.DictReader(fb)
+        #v = cur.execute("select product_fk from products where products_pk is not null")
+        for rows in csv_data:
+            t = (rows["asset_tag"], rows["product"])
+            cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
+
+    csv_data = csv.DictReader(fa)
     #v = cur.execute("select product_fk from products where products_pk is not null")
     for rows in csv_data:
-        t = (v["product_fk"], rows["asset_tag"], rows["product"])
- 
-        cur.execute("insert into products(vendor, description, alt_description) values (%s, %s, %s);", t)
+        t = (rows["asset_tag"], rows["product"])
+        cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
 
 #insert into compartments (abbrv, comment) values ($V1, $V2);
 conn.commit()
+
+#select product_pk from products 
+
+"""USER TABLES"""
+
+
+

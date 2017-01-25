@@ -1,12 +1,13 @@
 /*Asset Tables*/
 create table assets ( asset_pk serial, product_fk int, asset_tag varchar(16), description varchar(64), alt_description(64));
-create table products ( product_pk serial, vendor varchar(16), description varchar(64), alt_description(64));
+
 create table vehicles ( vehicle_pk serial, asset_fk int);
 create table facilities ( facility_pk serial, fcode varchar(8), common_name varchar(32), location varchar(100));
 create table asset_at ( asset_fk int, facility_fk int, arrive_dt timestamp, depart_dt timestamp);
 create table convoys ( convoy_pk serial, request varchar(16), source_fk int, dest_fk int, depart_dt timestamp, arrive_dt timestamp);
 create table used_by ( vehicle_fk int, convoy_fk int);
 create table asset_on ( asset_fk int, convoy_fk int, load_dt timestamp, unload_dt timestamp);
+create table products ( product_pk serial, vendor varchar(16), description varchar(64), alt_description varchar(64));
 
 /*User Tables*/
 create table users ( user_pk serial, username varchar(16), active boolean);

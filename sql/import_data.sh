@@ -4,8 +4,8 @@
 
 #curl -O https://classes.cs.uoregon.edu//17W/cis322/files/osnap_legacy.tar.gz
 
-#python3 gen_inserts > ins_tables.sql
-#psql create_tables.sql
+python3 gen_insert.py
+
 # // import and clean data from legacy into with new .py? 
 # // clean up python script and extra files once finished
 
