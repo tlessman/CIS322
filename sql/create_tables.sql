@@ -1,5 +1,5 @@
 /*Asset Tables*/
-create table assets ( asset_pk serial, product_fk int, asset_tag varchar(16), description varchar(64), alt_description(64));
+
 
 create table vehicles ( vehicle_pk serial, asset_fk int);
 create table facilities ( facility_pk serial, fcode varchar(8), common_name varchar(32), location varchar(100));
@@ -8,6 +8,8 @@ create table convoys ( convoy_pk serial, request varchar(16), source_fk int, des
 create table used_by ( vehicle_fk int, convoy_fk int);
 create table asset_on ( asset_fk int, convoy_fk int, load_dt timestamp, unload_dt timestamp);
 create table products ( product_pk serial, vendor varchar(16), description varchar(64), alt_description varchar(64));
+create table assets ( asset_pk serial, product_fk int, asset_tag varchar(16), description varchar(64), alt_description varchar(64));
+
 
 /*User Tables*/
 create table users ( user_pk serial, username varchar(16), active boolean);
@@ -19,5 +21,4 @@ create table user_supports ( user_ft int, facility_fk int);
 create table levels (level_pk serial, abbrv varchar(8), comment varchar(32));
 create table compartments (compartment_pk serial, abbrv varchar(8), comment varchar(32));
 create table security_tags (tag_pk serial, level_fk int, compartment_fk int, user_fk int, product_fk int, asset_fk int);
-
 

@@ -14,27 +14,28 @@ cur = conn.cursor()
 
 """SECURITY TABLES"""
 
-#access file compartments
+#migrate security compartments 
 with open('osnap_legacy/security_compartments.csv', 'r') as f:
     csv_data = csv.reader(f)
     first_row = next(csv_data)
     for rows in csv_data:
-        print(rows)
+
         cur.execute("insert into compartments (abbrv, comment) values (%s, %s);", rows)
 
-#insert into compartments (abbrv, comment) values ($V1, $V2);
-conn.commit()
 
-#access file levels 
+#migrate security levels 
 with open('osnap_legacy/security_levels.csv', 'r') as f:
     csv_data = csv.reader(f)
     first_row = next(csv_data)
     for rows in csv_data:
-        print(rows)
+
         cur.execute("insert into levels (abbrv, comment) values (%s, %s);", rows)
 
-#insert into compartments (abbrv, comment) values ($V1, $V2);
-conn.commit()
+#generate security tags
+
+
+
+
 
 """ASSET TABLES"""
 
@@ -47,52 +48,51 @@ with open('osnap_legacy/product_list.csv', 'r') as f:
  
         cur.execute("insert into products(vendor, description, alt_description) values (%s, %s, %s);", t)
 
-#insert into compartments (abbrv, comment) values ($V1, $V2);
-conn.commit()
 
-#access asset files 
+#access files assets 
 with open('osnap_legacy/DC_inventory.csv', 'r') as fa:
     with open('osnap_legacy/HQ_inventory.csv', 'r') as fb:
         with open('osnap_legacy/MB005_inventory.csv', 'r') as fc:
             with open('osnap_legacy/NC_inventory.csv', 'r') as fd:
-                with open('osnap_legacy/SPNV_inventory.csv', 'r') as fe:
- 
+                with open('osnap_legacy/SPNV_inventory.csv', 'r') as fe: 
                     csv_data = csv.DictReader(fe)
                     #v = cur.execute("select product_fk from products where products_pk is not null")
                     for rows in csv_data:
                         t = (rows["asset tag"], rows["product"])
                         cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
-
                 csv_data = csv.DictReader(fd)
                 #v = cur.execute("select product_fk from products where products_pk is not null")
                 for rows in csv_data:
-                    t = (rows["asset_tag"], rows["product"])
+                    t = (rows["asset tag"], rows["product"])
                     cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
-
             csv_data = csv.DictReader(fc)
             #v = cur.execute("select product_fk from products where products_pk is not null")
             for rows in csv_data:
-                t = (rows["asset_tag"], rows["product"])
+                t = (rows["asset tag"], rows["product"])
                 cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
-
         csv_data = csv.DictReader(fb)
         #v = cur.execute("select product_fk from products where products_pk is not null")
         for rows in csv_data:
-            t = (rows["asset_tag"], rows["product"])
+            t = (rows["asset tag"], rows["product"])
             cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
-
     csv_data = csv.DictReader(fa)
     #v = cur.execute("select product_fk from products where products_pk is not null")
     for rows in csv_data:
-        t = (rows["asset_tag"], rows["product"])
+        t = (rows["asset tag"], rows["product"])
         cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
 
-#insert into compartments (abbrv, comment) values ($V1, $V2);
-conn.commit()
+#facilities
+with open('osnap_legacy/'
+
+
 
 #select product_pk from products 
+
+
 
 """USER TABLES"""
 
 
 
+
+conn.commit()
