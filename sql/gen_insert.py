@@ -14,52 +14,68 @@ conn = psycopg2.connect( dbname = sys.argv[1], host = '127.0.0.1', port = int(sy
 cur = conn.cursor()
 
 """Retrieve data from csv by file"""
+"""
+#acquisitions.csv
+#
+with open('osnap_legacy/acquisitions.csv', 'r') as f:
+    csv_data = csv.DictReader(f)
+    for rows in csv_data:
+        t = (rows[""], rows[""], rows[""]) 
+        cur.execute("insert into C() values (%s, %s, %s);", t)
+conn.commit()
 
+#
+"""
+"""
+#convoy.csv
+#
+with open('osnap_legacy/convoy.csv', 'r') as f:
+    csv_data = csv.DictReader(f)
+    for rows in csv_data:
+        t = (rows[""], rows[""], rows[""]) 
+        cur.execute("insert into C() values (%s, %s, %s);", t)
+conn.commit()
+
+#
+"""
 #security_compartments.csv
+#
 with open('osnap_legacy/security_compartments.csv', 'r') as f:
     csv_data = csv.reader(f)
     first_row = next(csv_data)
     for rows in csv_data:
-
         cur.execute("insert into compartments (abbrv, comment) values (%s, %s);", rows)
 conn.commit()
+#
 
 #security_levels.csv 
+#
 with open('osnap_legacy/security_levels.csv', 'r') as f:
     csv_data = csv.reader(f)
     first_row = next(csv_data)
     for rows in csv_data:
-
         cur.execute("insert into levels (abbrv, comment) values (%s, %s);", rows)
 conn.commit()
+#
 
 #product_list.csv 
+#
 with open('osnap_legacy/product_list.csv', 'r') as f:
     csv_data = csv.DictReader(f)
+    for rows in csv_data:
+        t = (rows["vendor"], rows["name"], rows["model"]) 
+        cur.execute("insert into products(vendor, description, alt_description) values (%s, %s, %s);", t)
+conn.commit()
+#
 
-    for rows in csv_data:
-        t = (rows["vendor"], rows["name"], rows["model"])
- 
-        cur.execute("insert into products(vendor, description, alt_description) values (%s, %s, %s);", t)
-conn.commit()
-"""
-#access file products 
-with open('osnap_legacy/product_list.csv', 'r') as f:
-    csv_data = csv.DictReader(f)   
-        
-    for rows in csv_data:
-        t = (rows["vendor"], rows["name"], rows["model"])
- 
-        cur.execute("insert into products(vendor, description, alt_description) values (%s, %s, %s);", t)
-conn.commit()
-"""
+# * _inventory.csv
+#
 def read_inv(filename):
     csv_data = csv.DictReader(filename)
     for rows in csv_data:
-        t = (rows["asset tag"], rows["product"])
-        cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
+        t = (rows["asset tag"])
+        cur.execute("insert into assets(asset_tag) values (%s);", t)
 
-# * _inventory.csv
 with open('osnap_legacy/DC_inventory.csv', 'r') as fa:
     with open('osnap_legacy/HQ_inventory.csv', 'r') as fb:
         with open('osnap_legacy/MB005_inventory.csv', 'r') as fc:
@@ -71,31 +87,30 @@ with open('osnap_legacy/DC_inventory.csv', 'r') as fa:
         read_inv(fb)
     read_inv(fa)
 conn.commit()
+#
 
-#facilities
-#with open('osnap_legacy/'
-
-
-
-#select product_pk from products 
-
-
-
-"""USER TABLES"""
-
-"""
-#access file products 
-reader1, reader2 = itertools.tee(csv.DictReader(f))
-columns = len(next(reader1))
-del reader1
-with open('osnap_legacy/product_list.csv', 'r') as f:
-    for row in reader2:
-        csv_data = csv.DictReader(f)
-        for rows in csv_data:
-            t = (rows["vendor"], rows["name"], rows["model"])
-        cur.execute("insert into products(vendor, description, alt_description) values (%s, %s, %s);", t)
+#transit.csv
+#
+with open('osnap_legacy/transit.csv', 'r') as f:
+    csv_data = csv.DictReader(f)
+    for rows in csv_data:
+        t = (rows["transport request #"], rows["src facility"], rows["dst facility"]) 
+        cur.execute("insert into facilities(fcode, common, location) values (%s, %s, %s);", t)
 conn.commit()
+
+
+#
 """
+#vendors.csv
+#
+with open('osnap_legacy/vendors.csv', 'r') as f:
+    csv_data = csv.DictReader(f)
+    for rows in csv_data:
+        t = (rows[""], rows[""], rows[""]) 
+        cur.execute("insert into C() values (%s, %s, %s);", t)
+conn.commit()
 
-
+#
+"""
+"""Assign Keys"""
 
