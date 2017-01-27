@@ -13,6 +13,9 @@ conn = psycopg2.connect( dbname = sys.argv[1], host = '127.0.0.1', port = int(sy
 #conn = psycopg2.connect( dbname = 'lost', host = '127.0.0.1', port = 5432)
 cur = conn.cursor()
 
+# asset at
+#select asset_pk from assets where %s = "assets.asset_tag", row (asset tag)
+
 """Retrieve data from csv by file"""
 """
 #acquisitions.csv
