@@ -22,7 +22,7 @@ with open('osnap_legacy/acquisitions.csv', 'r') as f:
     for rows in csv_data:
         t = (rows[""], rows[""], rows[""]) 
         cur.execute("insert into C() values (%s, %s, %s);", t)
-conn.commit()
+#conn.commit()
 
 #
 """
@@ -34,7 +34,7 @@ with open('osnap_legacy/convoy.csv', 'r') as f:
     for rows in csv_data:
         t = (rows[""], rows[""], rows[""]) 
         cur.execute("insert into C() values (%s, %s, %s);", t)
-conn.commit()
+#conn.commit()
 
 #
 """
@@ -45,7 +45,7 @@ with open('osnap_legacy/security_compartments.csv', 'r') as f:
     first_row = next(csv_data)
     for rows in csv_data:
         cur.execute("insert into compartments (abbrv, comment) values (%s, %s);", rows)
-conn.commit()
+#conn.commit()
 #
 
 #security_levels.csv 
@@ -55,7 +55,7 @@ with open('osnap_legacy/security_levels.csv', 'r') as f:
     first_row = next(csv_data)
     for rows in csv_data:
         cur.execute("insert into levels (abbrv, comment) values (%s, %s);", rows)
-conn.commit()
+#conn.commit()
 #
 
 #product_list.csv 
@@ -65,7 +65,7 @@ with open('osnap_legacy/product_list.csv', 'r') as f:
     for rows in csv_data:
         t = (rows["vendor"], rows["name"], rows["model"]) 
         cur.execute("insert into products(vendor, description, alt_description) values (%s, %s, %s);", t)
-conn.commit()
+#conn.commit()
 #
 
 # * _inventory.csv
@@ -73,8 +73,9 @@ conn.commit()
 def read_inv(filename):
     csv_data = csv.DictReader(filename)
     for rows in csv_data:
-        t = (rows["asset tag"])
-        cur.execute("insert into assets(asset_tag) values (%s);", t)
+        t = (rows["asset tag"], rows["product"])
+        cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
+
 
 with open('osnap_legacy/DC_inventory.csv', 'r') as fa:
     with open('osnap_legacy/HQ_inventory.csv', 'r') as fb:
@@ -86,7 +87,7 @@ with open('osnap_legacy/DC_inventory.csv', 'r') as fa:
             read_inv(fc)
         read_inv(fb)
     read_inv(fa)
-conn.commit()
+#conn.commit()
 #
 
 #transit.csv
@@ -95,8 +96,8 @@ with open('osnap_legacy/transit.csv', 'r') as f:
     csv_data = csv.DictReader(f)
     for rows in csv_data:
         t = (rows["transport request #"], rows["src facility"], rows["dst facility"]) 
-        cur.execute("insert into facilities(fcode, common, location) values (%s, %s, %s);", t)
-conn.commit()
+        cur.execute("insert into facilities(fcode, common_name, location) values (%s, %s, %s);", t)
+#conn.commit()
 
 
 #
@@ -108,9 +109,12 @@ with open('osnap_legacy/vendors.csv', 'r') as f:
     for rows in csv_data:
         t = (rows[""], rows[""], rows[""]) 
         cur.execute("insert into C() values (%s, %s, %s);", t)
-conn.commit()
+#conn.commit()
 
 #
 """
 """Assign Keys"""
+
+
+conn.commit()
 
