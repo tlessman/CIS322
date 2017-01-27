@@ -8,7 +8,7 @@ import sys
 
 
 #database connection setup
-conn = psycopg2.connect(dbname=sys.argv[1], host = '127.0.0.1', port = int(sys.argv[2]))
+conn = psycopg2.connect( dbname = sys.argv[1], host = '127.0.0.1', port = int(sys.argv[2]))
 #conn = psycopg2.connect( dbname = 'lost', host = '127.0.0.1', port = 5432)
 cur = conn.cursor()
 
@@ -21,7 +21,7 @@ with open('osnap_legacy/security_compartments.csv', 'r') as f:
     for rows in csv_data:
 
         cur.execute("insert into compartments (abbrv, comment) values (%s, %s);", rows)
-
+conn.commit()
 
 #migrate security levels 
 with open('osnap_legacy/security_levels.csv', 'r') as f:
@@ -30,6 +30,7 @@ with open('osnap_legacy/security_levels.csv', 'r') as f:
     for rows in csv_data:
 
         cur.execute("insert into levels (abbrv, comment) values (%s, %s);", rows)
+conn.commit()
 
 #generate security tags
 
@@ -47,7 +48,7 @@ with open('osnap_legacy/product_list.csv', 'r') as f:
         t = (rows["vendor"], rows["name"], rows["model"])
  
         cur.execute("insert into products(vendor, description, alt_description) values (%s, %s, %s);", t)
-
+conn.commit()
 
 #access files assets  // open all files and pull relavant fields
 with open('osnap_legacy/DC_inventory.csv', 'r') as fa:
@@ -80,9 +81,10 @@ with open('osnap_legacy/DC_inventory.csv', 'r') as fa:
     for rows in csv_data:
         t = (rows["asset tag"], rows["product"])
         cur.execute("insert into assets(asset_tag, description) values (%s, %s);", t)
+conn.commit()
 
 #facilities
-with open('osnap_legacy/'
+#with open('osnap_legacy/'
 
 
 
@@ -94,5 +96,3 @@ with open('osnap_legacy/'
 
 
 
-
-conn.commit()
