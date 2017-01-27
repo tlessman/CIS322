@@ -8,8 +8,8 @@ import sys
 
 
 #database connection setup
-#conn = psycopg2.connect(dbname=sys.argv[1], host = '127.0.0.1', port = int(sys.argv[2]))
-conn = psycopg2.connect( dbname = 'lost', host = '127.0.0.1', port = 5432)
+conn = psycopg2.connect(dbname=sys.argv[1], host = '127.0.0.1', port = int(sys.argv[2]))
+#conn = psycopg2.connect( dbname = 'lost', host = '127.0.0.1', port = 5432)
 cur = conn.cursor()
 
 """SECURITY TABLES"""
@@ -49,7 +49,7 @@ with open('osnap_legacy/product_list.csv', 'r') as f:
         cur.execute("insert into products(vendor, description, alt_description) values (%s, %s, %s);", t)
 
 
-#access files assets 
+#access files assets  // open all files and pull relavant fields
 with open('osnap_legacy/DC_inventory.csv', 'r') as fa:
     with open('osnap_legacy/HQ_inventory.csv', 'r') as fb:
         with open('osnap_legacy/MB005_inventory.csv', 'r') as fc:

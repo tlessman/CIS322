@@ -1,10 +1,16 @@
 #import_data.sh dbname port
+
+echo $1
+echo $2
+
 #$1 dbname
 #$2 port
 
-#curl -O https://classes.cs.uoregon.edu//17W/cis322/files/osnap_legacy.tar.gz
+python3 gen_insert.py $1 $2
 
-python3 gen_insert.py
+
+
+
 
 # // import and clean data from legacy into with new .py? 
 # // clean up python script and extra files once finished
