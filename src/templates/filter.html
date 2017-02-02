@@ -1,24 +1,40 @@
+
+
 <html>
 	<body>
 		<a href="/logout">Sign Out</a>
 		<h1>OSNAP</h1><br>
 		<h3>LOST Asset Tracking System</h3><br>		
 		<h4>Select options to filter your results:</h4>
-		<fieldset><legend>Filter Request</legend>
-		<form action="" name="filter"><table><tr>
-			<input type="date"/>
-			<select name="facility">
-				<option value="f00">All</option>
-				<option value="f01">HQ</option>
-				<option value="f02">LA</option>
-				<option value="f03">NC</option>
-				<option value="f04">MB005</option>
-				<option value="f05">SPNV</option>
+		<fieldset style="width:10 em"><legend>Filter Request</legend>
+			<table><tr>
+			<form action="/inventory" name="inventory filter">
+				<input type="date"/>
+				<select name="facility">
+					<option value="f00">All</option>
+					<option value="f01">HQ</option>
+					<option value="f02">LA</option>
+					<option value="f03">NC</option>
+					<option value="f04">MB005</option>
+					<option value="f05">SPNV</option>
+				</select>
+				<input type="submit" value="Generate Inventory Report"></input>
+
+			</form>		
+			</tr><tr>	
+			<form action="/transit" name="transit filter">
+				<input type="date"/>
+				<select name="facility">
+					<option value="f00">All</option>
+					<option value="f01">HQ</option>
+					<option value="f02">LA</option>
+					<option value="f03">NC</option>
+					<option value="f04">MB005</option>
+					<option value="f05">SPNV</option>
 			</select>
-			<table><tr><input type="submit" value="Generate Inventory Report"></input>
 			<input type="submit" value="Generate Tracking Report"></input>
-				</tr></table>	
-		</tr></table></form>		
+			</form>	
+		
 		</fieldset>
 	</body>
 </html>
