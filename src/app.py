@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+#from config import dbname, dbhost, dbport
 
 app = Flask(__name__)
 """
@@ -12,7 +13,11 @@ def login():
 
 @app.route('/filter')
 def filter():
-    return render_template('filter.html')
+    if request.method == 'GET' and 'username' in request.args:
+        return render_template('filter.html', data=request.args.get('username'))
+    if request.method == 'POST' and 'username' in request.form:
+        return render_template('filter.html', data=request.form['username'])
+    return render_template('login.html')
 
 @app.route('/inventory')
 def inventory():

@@ -2,12 +2,13 @@
 
 <html>
 	<body>
-		<a href="/logout">Sign Out</a>
+		<p>{{data}} <a href="/logout">Sign Out</a></p>
 		<h1>OSNAP</h1><br>
 		<h3>LOST Asset Tracking System</h3><br>		
 		<h4>Select options to filter your results:</h4>
-		<fieldset style="width:10 em"><legend>Filter Request</legend>
-			<table><tr>
+		<table><tr>
+		<fieldset><legend>Inventory Request</legend>
+		
 			<form action="/inventory" name="inventory filter">
 				<input type="date"/>
 				<select name="facility">
@@ -19,9 +20,10 @@
 					<option value="f05">SPNV</option>
 				</select>
 				<input type="submit" value="Generate Inventory Report"></input>
-
+	
 			</form>		
-			</tr><tr>	
+		</fieldset></tr>
+		<tr><fieldset><legend>Transit Request</legend>	
 			<form action="/transit" name="transit filter">
 				<input type="date"/>
 				<select name="facility">
@@ -36,5 +38,6 @@
 			</form>	
 		
 		</fieldset>
+		</tr>
 	</body>
 </html>
