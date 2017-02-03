@@ -9,9 +9,9 @@
 		<table><tr>
 		<fieldset><legend>Inventory Request</legend>
 		
-			<form action="/inventory" name="inventory filter">
-				<input type="date"/>
-				<select name="facility">
+			<form action="/inventory" name="ifilter" >
+				<input type="date" name="sel_date"/>
+				<select name="sel_facility">
 					<option value="f00">All</option>
 					<option value="f01">HQ</option>
 					<option value="f02">LA</option>
@@ -24,9 +24,9 @@
 			</form>		
 		</fieldset></tr>
 		<tr><fieldset><legend>Transit Request</legend>	
-			<form action="/transit" name="transit filter">
-				<input type="date"/>
-				<select name="facility">
+			<form action="/transit" name="tfilter">
+				<input type="date" name="sel_date"/>
+				<select name="sel_facility">
 					<option value="f00">All</option>
 					<option value="f01">HQ</option>
 					<option value="f02">LA</option>
@@ -34,7 +34,7 @@
 					<option value="f04">MB005</option>
 					<option value="f05">SPNV</option>
 			</select>
-			<input type="submit" value="Generate Tracking Report"></input>
+			<input type="submit" value="Generate Transit Report"></input>
 			</form>	
 		
 		</fieldset>
