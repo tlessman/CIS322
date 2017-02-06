@@ -28,13 +28,13 @@ def dev():
         return render_template('dev.html', data=request.args.get('search'))
     if request.method == 'POST' and 'search' in request.form:
         return render_template('dev.html', data=request.form('search'))
-    SQL = "%s"
+    SQL = "SELECT %s FROM assets;"
     data = (1,)
     cur.execute(SQL, data)
     result - cur.fetchall()
     session['res_dev'] = result
     data_report = []
-    for r in result:
+    for r in res_dev:
         e= dict()
         e['pk']=r[0]
         data_report.append(e)
@@ -44,11 +44,12 @@ def dev():
 
 @app.route('/inventory')
 def inventory():
-    #SQL = "SELECT * FROM assets WHERE asset_pk = %s"
-    #data = (1,)
-    #cur.execute(SQL, data1)
-    #result = cur.fetchall()
-    #session['res_asset'] = result
+    SQL = "SELECT asset_tag, common_name, arrive_dt FROM assets a JOIN asset_at aa ON a.asset_pk = aa.asset_fk JOIN convoys c ON ao.convoy_fk=c.convoy_pk WHERE ao.load_dt < now() and (aa.unload_dt is NULL or aa.unload_ft > %s) or (WHERE source_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s) or WHERE dest_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s));"
+
+    data = (1,)
+    cur.execute(SQL, data1, data2, data2)
+    result = cur.fetchall()
+    session['res_asset'] = result
 
     if request.method == 'GET' and (('sel_date' in request.args and 'sel_facility' in request.args) or ('sel_date' in request.args or 'sel_facility' in request.args)):
         return render_template('inventory.html', data1=request.args.get('sel_date'), data2=request.args.get('sel_facility'))
@@ -61,11 +62,11 @@ def inventory():
 @app.route('/transit')
 def transit():
 
-    #SQL = "SELECT request_id, asset_tag FROM assets a JOIN asset_on ao ON a.asset_pk = %s JOIN convoys c ON ao.convoy_fk=c.convoy_pk WHERE ao.load_dt < now() and (aa.unload_dt is NULL or aa.unload_ft > %s)"
-    #data = (1,2,)
-    #cur.execute(SQL, data2, data1)
-    #result = cur.fetchall()
-    #session['res_transit'] = result
+    SQL = "SELECT request_id, asset_tag FROM assets a JOIN asset_on ao ON a.asset_pk = ao.asset_fk JOIN convoys c ON ao.convoy_fk=c.convoy_pk WHERE (ao.load_dt < now() and (aa.unload_dt is NULL or aa.unload_ft > %s)) or (WHERE source_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s) or WHERE dest_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s));"
+    data = (1,2,)
+    cur.execute(SQL, data1, data2, data2)
+    result = cur.fetchall()
+    session['res_transit'] = result
 
     if request.method == 'GET' and (('sel_date' in request.args and 'sel_facility' in request.args) or ('sel_date' in request.args or 'sel_facility' in request.args)):
         return render_template('transit.html', data1=request.args.get('sel_date'), data2=request.args.get('sel_facility'))
