@@ -3,7 +3,7 @@ import json
 import os
 import pathlib
 
-cpath = pathlib.Path(os.path.realpath(__file__)).parent.joinpath('lost.config.json')
+cpath = pathlib.Path(os.path.realpath(__file__)).parent.joinpath('lost_config.json')
 
 with cpath.open() as conf:
     c = json.load(conf)

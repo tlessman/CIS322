@@ -10,6 +10,31 @@ app.secret_key = 'c34f5286bed45063'
 conn = psycopg2.connect(dbname=dbname, host=dbhost, port=dbport)
 cur = conn.cursor()
 
+# REST FUNCTIONS #
+
+@app.route('/rest')
+
+@app.route('/rest/activate_user', methods=['POST'])
+def activate_user():
+    if request.method=='POST' and 'arguments' in request.form:
+        req=json.loads(request.form['arguments'])
+    dat = dict()
+
+@app.route('/rest/suspend_user', methods=["POST"])
+def suspend_user():
+    if request.method=='POST' and 'arguments' in request.form:
+        req=json.loads(request.form['arguments'])
+    dat = dict()
+    dat['timestamp'] = req['timestamp']
+    dat['result'] = 'OK'
+    data = json.dumps(dat)
+    return data
+
+
+
+
+# HTML ROUTING #
+
 @app.route('/')
 def login():
     return render_template('login.html', dbname=dbname, dbhost=dbhost, dbport=dbport)
@@ -42,7 +67,7 @@ def dev():
 
     return render_template('dev.html')
 
-@app.route('/inventory')
+@app.route('/inventory', methods=["POST"])
 def inventory():
     SQL = "SELECT asset_tag, common_name, arrive_dt FROM assets a JOIN asset_at aa ON a.asset_pk = aa.asset_fk JOIN convoys c ON ao.convoy_fk=c.convoy_pk WHERE ao.load_dt < now() and (aa.unload_dt is NULL or aa.unload_ft > %s) or (WHERE source_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s) or WHERE dest_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s));"
 

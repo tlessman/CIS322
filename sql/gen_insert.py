@@ -17,7 +17,7 @@ cur = conn.cursor()
 #select asset_pk from assets where %s = "assets.asset_tag", row (asset tag)
 
 """Retrieve data from csv by file"""
-"""
+"""REDO IT PER TABLE!!!  
 #acquisitions.csv
 #
 with open('osnap_legacy/acquisitions.csv', 'r') as f:
