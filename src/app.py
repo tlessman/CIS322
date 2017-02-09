@@ -14,14 +14,91 @@ cur = conn.cursor()
 
 @app.route('/rest')
 
+@app.route('/rest/lost_key', methods=['POST'])
+def losy_key():
+    if request.method=='POST' and 'arguments' in request.form:
+        req=json.loads(request.form['arguments'])
+    dat = dict()
+    dat['timestamp'] = req['timestamp']
+    dat['result'] = 'OK'
+    dat['lost_key'] = 'LOST-Df4;5[L15J20fa92jaMd@q]%w#a'
+    data = json.dumps(dat)
+    return data
+
 @app.route('/rest/activate_user', methods=['POST'])
 def activate_user():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
+    #do queries
     dat = dict()
+    dat['timestamp'] = req['timestamp']
+    dat['result'] = 'OK'
+    data = json.dumps(dat)
+    return data
+
+    #for queries:
+    #req['timestamp']
+    #req['username']
 
 @app.route('/rest/suspend_user', methods=["POST"])
 def suspend_user():
+    if request.method=='POST' and 'arguments' in request.form:
+        req=json.loads(request.form['arguments'])
+    #do queries
+    dat = dict()
+    dat['timestamp'] = req['timestamp']
+    dat['result'] = 'OK'
+    data = json.dumps(dat)
+    return data
+    
+    #for queries:
+    #req['timestamp]'
+    #req['username']
+
+
+@app.route('/rest/list_products')
+def list_products():
+    if request.method=='POST' and 'arguments' in request.form:
+        req=json.loads(request.form['arguments'])
+    #do queries
+    dat = dict()
+    dat['timestamp'] = req['timestamp']
+    dat['listing'] = dict()
+    #listing
+    dat['listing']['vendor'] = req['vendor']
+    dat['listing']['description'] = req['description']
+    dat['listing']['compartments'] = req['compartments']
+    data = json.dumps(dat)
+    return data
+    
+    #for queries:
+    #req['timestamp']
+    #req['vendor']
+    #req['description']
+    #req['compartments']
+
+
+@app.route('/rest/add_products')
+def add_products():
+    if request.method=='POST' and 'arguments' in request.form:
+        req=json.loads(request.form['arguments'])
+    #do queries
+    dat = dict()
+    dat['timestamp'] = req['timestamp']
+    dat['result'] = 'OK'
+    data = json.dumps(dat)
+    return data
+
+    #for queries: req['new_products']
+    #req['timestamp']
+    #req['new_products']['vendor']
+    #req['new_products']['description']
+    #req['new_products']['alt_description']
+    #req['new_products']['compartments']
+    
+
+@app.route('/rest/add_asset')
+def add_asset():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
     dat = dict()
@@ -30,8 +107,13 @@ def suspend_user():
     data = json.dumps(dat)
     return data
 
-
-
+    #for queries:
+    #req['timestamp']
+    #req['vendor']
+    #req['description']
+    #req['compartments']
+    #req['facility']
+    
 
 # HTML ROUTING #
 
