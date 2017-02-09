@@ -4,7 +4,7 @@
 		<h1>OSNAP</h1><br>
 		<h3>LOST Asset Tracking System</h2><br
 		<p>Connected to {{dbhost}} at port {{dbport}} for database {{dbname}} </p>
-		<form action={{url_for('filter')}} >	
+		<form action={{url_for('filter')}}, method="POST">	
 			<input type="text" name="username" rows="1" cols="16"/>
 			<button type="submit">Log in to LOST</button> 
 			</input>

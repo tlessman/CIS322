@@ -9,7 +9,7 @@
 		<table><tr>
 		<fieldset><legend>Inventory Request</legend>
 		
-			<form action="/inventory" name="ifilter" >
+			<form action="/inventory" name="ifilter" method="POST">
 				<input type="date" name="sel_date"/>
 				<select name="sel_facility">
 					<option value="f00">All</option>
@@ -24,7 +24,7 @@
 			</form>		
 		</fieldset></tr>
 		<tr><fieldset><legend>Transit Request</legend>	
-			<form action="/transit" name="tfilter">
+			<form action="/transit" name="tfilter" method="POST">
 				<input type="date" name="sel_date"/>
 				<select name="sel_facility">
 					<option value="f00">All</option>

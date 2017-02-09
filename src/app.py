@@ -121,7 +121,7 @@ def add_asset():
 def login():
     return render_template('login.html', dbname=dbname, dbhost=dbhost, dbport=dbport)
 
-@app.route('/filter')
+@app.route('/filter', methods=["POST"])
 def filter():
     if request.method == 'GET' and 'username' in request.args:
         return render_template('filter.html', data=request.args.get('username'))
@@ -129,7 +129,7 @@ def filter():
         return render_template('filter.html', data=request.form['username'])
     return render_template('login.html')
 
-@app.route('/dev')
+@app.route('/dev', methods=["POST"])
 def dev():
     if request.method == 'GET' and 'search' in request.args:
         return render_template('dev.html', data=request.args.get('search'))
@@ -151,10 +151,13 @@ def dev():
 
 @app.route('/inventory', methods=["POST"])
 def inventory():
-    SQL = "SELECT asset_tag, common_name, arrive_dt FROM assets a JOIN asset_at aa ON a.asset_pk = aa.asset_fk JOIN convoys c ON ao.convoy_fk=c.convoy_pk WHERE ao.load_dt < now() and (aa.unload_dt is NULL or aa.unload_ft > %s) or (WHERE source_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s) or WHERE dest_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s));"
+    #SQL = "SELECT asset_tag, common_name, arrive_dt FROM assets a JOIN asset_at aa ON a.asset_pk = aa.asset_fk JOIN convoys c ON ao.convoy_fk=c.convoy_pk WHERE ao.load_dt < now() and (aa.unload_dt is NULL or aa.unload_ft > %s) or (WHERE source_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s) or WHERE dest_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s));"
+    SQL = "SELECT * FROM assets;"
 
-    data = (1,)
-    cur.execute(SQL, data1, data2, data2)
+    #data = (1,)
+    #cur.execute(SQL, data1, data2, data2)
+    
+    cur.execute(SQL)
     result = cur.fetchall()
     session['res_asset'] = result
 
@@ -166,7 +169,7 @@ def inventory():
         return render_template('inventory.html', data1=request.form['sel_date'], data2=request.form['sel_facility'])
     return render_template('inventory.html')
 
-@app.route('/transit')
+@app.route('/transit', methods=["POST"])
 def transit():
 
     SQL = "SELECT request_id, asset_tag FROM assets a JOIN asset_on ao ON a.asset_pk = ao.asset_fk JOIN convoys c ON ao.convoy_fk=c.convoy_pk WHERE (ao.load_dt < now() and (aa.unload_dt is NULL or aa.unload_ft > %s)) or (WHERE source_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s) or WHERE dest_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s));"
