@@ -1,27 +1,28 @@
 from flask import Flask, render_template, request, session
 from config import dbname, dbhost, dbport
 import psycopg2
+import json
 
 
 
 #globals
 app = Flask(__name__)
 app.secret_key = 'c34f5286bed45063'
-conn = psycopg2.connect(dbname=dbname, host=dbhost, port=dbport)
-cur = conn.cursor()
+#conn = psycopg2.connect(dbname=dbname, host=dbhost, port=dbport)
+#cur = conn.cursor()
 
 # REST FUNCTIONS #
 
 @app.route('/rest')
 
 @app.route('/rest/lost_key', methods=['POST'])
-def losy_key():
-    if request.method=='POST' and 'arguments' in request.form:
-        req=json.loads(request.form['arguments'])
+def lost_key():
+    #if request.method=='POST' and 'arguments' in request.form:
+    #    req=json.loads(request.form['arguments'])
     dat = dict()
-    dat['timestamp'] = req['timestamp']
+    dat['timestamp'] = 'TIMESTAMP!'
     dat['result'] = 'OK'
-    dat['lost_key'] = 'LOST-Df4;5[L15J20fa92jaMd@q]%w#a'
+    dat['key'] = 'LOST-Df4;5[L15J20fa92jaMd@q]%w#a'
     data = json.dumps(dat)
     return data
 
@@ -55,20 +56,39 @@ def suspend_user():
     #req['timestamp]'
     #req['username']
 
-
 @app.route('/rest/list_products')
 def list_products():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
     #do queries
+    conn = psycopg2.connect(dbname=dbname, host=dbhost, port=dbport)
+    cur = conn.cursor()
+    #no compartment
+    SQL = """
+    SELECT vendor,description FROM PRODUCTS p
+    """
+    if not req['vendor']=='' and not req['description']=='':
+        req['vendor']="%"+req['vendor']+"%"
+        req['description']="%"+['description']+"%"
+        SQL += "WHERE description ilike %s and vendor ilike %s group by vendor,description"
+        cur.execute(SQL,(req['description'],req['vendor']))
+
+    dbres = cur.fetchall()
+    listing = list()
+    for row in dbres:
+        e = dict()
+        e['vendor'] = row[0]
+        e['description'] = row[1]
+        listing.append(e)
+
     dat = dict()
     dat['timestamp'] = req['timestamp']
-    dat['listing'] = dict()
-    #listing
-    dat['listing']['vendor'] = req['vendor']
-    dat['listing']['description'] = req['description']
-    dat['listing']['compartments'] = req['compartments']
+    dat['listing'] = listing
+    #listing['vendor'] = req['vendor']
+    #listing['description'] = req['description']
+    #listing['compartments'] = req['compartments']
     data = json.dumps(dat)
+    conn.close()
     return data
     
     #for queries:
@@ -127,7 +147,7 @@ def filter():
         return render_template('filter.html', data=request.args.get('username'))
     if request.method == 'POST' and 'username' in request.form:
         return render_template('filter.html', data=request.form['username'])
-    return render_template('login.html')
+    return render_template('filter.html')
 
 @app.route('/dev', methods=["POST"])
 def dev():

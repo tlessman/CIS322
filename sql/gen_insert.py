@@ -111,7 +111,7 @@ with open('osnap_legacy/vendors.csv', 'r') as f:
     csv_data = csv.DictReader(f)
     for rows in csv_data:
         t = (rows[""], rows[""], rows[""]) 
-        cur.execute("insert into C() values (%s, %s, %s);", t)
+        cur.execute("insert into C) values (%s, %s, %s);", t)
 #conn.commit()
 
 #
