@@ -14,6 +14,12 @@ app.secret_key = 'c34f5286bed45063'
 # REST FUNCTIONS #
 
 @app.route('/rest')
+def rest():
+    if request.method == 'GET':
+        return render_template('rest.html')
+    if request.method == 'POST':
+        return render_template('rest.html')
+    return render_template('rest.html')
 
 @app.route('/rest/lost_key', methods=['POST'])
 def lost_key():
@@ -56,7 +62,7 @@ def suspend_user():
     #req['timestamp]'
     #req['username']
 
-@app.route('/rest/list_products')
+@app.route('/rest/list_products', methods=["POST"])
 def list_products():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
@@ -65,11 +71,11 @@ def list_products():
     cur = conn.cursor()
     #no compartment
     SQL = """
-    SELECT vendor,description FROM PRODUCTS p
+    SELECT vendor,description FROM products p
     """
-    if not req['vendor']=='' and not req['description']=='':
+    if True:  
         req['vendor']="%"+req['vendor']+"%"
-        req['description']="%"+['description']+"%"
+        req['description']="%"+req['description']+"%"
         SQL += "WHERE description ilike %s and vendor ilike %s group by vendor,description"
         cur.execute(SQL,(req['description'],req['vendor']))
 
@@ -84,9 +90,11 @@ def list_products():
     dat = dict()
     dat['timestamp'] = req['timestamp']
     dat['listing'] = listing
+    
     #listing['vendor'] = req['vendor']
     #listing['description'] = req['description']
     #listing['compartments'] = req['compartments']
+    
     data = json.dumps(dat)
     conn.close()
     return data
