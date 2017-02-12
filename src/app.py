@@ -36,7 +36,13 @@ def lost_key():
 def activate_user():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
-    #do queries
+    #SQL="""
+    #SELECT user_pk p,active a FROM users u WHERE username un ilike %s 
+    #"""
+    #SQL="""
+    #INSERT INTO TABLE users VALUES ( DEFAULT, %s, 1)
+    #"""    
+    cur.execute(SQL, req['username'])
     dat = dict()
     dat['timestamp'] = req['timestamp']
     dat['result'] = 'OK'
@@ -111,8 +117,8 @@ left join sec_levels l on t.level_fk=l.level_pk"""
         # Need to handle compartments too
         SQLstart = """select vendor,description,string_agg(c.abbrv||':'||l.abbrv,',')
 from security_tags t
-left join sec_compartments c on t.compartment_fk=c.compartment_pk
-left join sec_levels l on t.level_fk=l.level_pk
+left join compartments c on t.compartment_fk=c.compartment_pk
+left join levels l on t.level_fk=l.level_pk
 left join products p on t.product_fk=p.product_pk
 where product_fk is not NULL and c.abbrv||':'||l.abbrv = ANY(%s)"""
         if req['vendor']=='' and req['description']=='':
@@ -201,7 +207,7 @@ def list_products():
     #req['compartments']
 """
 
-@app.route('/rest/add_products')
+@app.route('/rest/add_products', methods=["POST"])
 def add_products():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
@@ -218,9 +224,9 @@ def add_products():
     #req['new_products']['description']
     #req['new_products']['alt_description']
     #req['new_products']['compartments']
-    
 
-@app.route('/rest/add_asset')
+
+@app.route('/rest/add_asset', methods=["POST"])
 def add_asset():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
