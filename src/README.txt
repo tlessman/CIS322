@@ -30,5 +30,5 @@ $/src/templates/*
 
 /dev : debug page for handling report testing
 
-
+/rest : landing page and documentation for LOST ReST Web Service API Calls
 

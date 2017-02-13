@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, session
 from config import dbname, dbhost, dbport
 import psycopg2
 import json
+import time
+from datetime import datetime
 
 
 
@@ -23,30 +25,47 @@ def rest():
 
 @app.route('/rest/lost_key', methods=['POST'])
 def lost_key():
-    #if request.method=='POST' and 'arguments' in request.form:
-    #    req=json.loads(request.form['arguments'])
+#####################################################################################
+# date_converter() and datetime handling impsired from code from:
+#   https://code-maven.com/serialize-datetime-object-as-json-in-python
+#
+    def date_converter(d):
+        if isinstance(d, datetime):
+            return d.__str__()
+    
     dat = dict()
-    dat['timestamp'] = 'TIMESTAMP!'
+    dat['timestamp'] = datetime.utcnow()
     dat['result'] = 'OK'
     dat['key'] = 'LOST-Df4;5[L15J20fa92jaMd@q]%w#a'
-    data = json.dumps(dat)
+    data = json.dumps(dat, default = date_converter)
     return data
 
 @app.route('/rest/activate_user', methods=['POST'])
 def activate_user():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
+    else:
+        redirect('rest')
+    
+    conn = psycopg2.connect(dbname=dbname,host=dbhost,port=dbport)
+    cur  = conn.cursor()
+    
+    ##if user exists and is inactive ## 
     #SQL="""
     #SELECT user_pk p,active a FROM users u WHERE username un ilike %s 
     #"""
+
     #SQL="""
     #INSERT INTO TABLE users VALUES ( DEFAULT, %s, 1)
     #"""    
-    cur.execute(SQL, req['username'])
+    #cur.execute(SQL, req['username'])
+
     dat = dict()
     dat['timestamp'] = req['timestamp']
     dat['result'] = 'OK'
     data = json.dumps(dat)
+    
+    conn.close
     return data
 
     #for queries:
@@ -57,16 +76,37 @@ def activate_user():
 def suspend_user():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
+    else:
+        redirect('rest')
     #do queries
+    
+    conn = psycopg2.connect(dbname=dbname,host=dbhost,port=dbport)
+    cur  = conn.cursor()
+    
+    #SQL="""
+    #DELETE FROM TABLE users WHERE username ilike %s
+    #"""    
+    #cur.execute(SQL, req['username'])
+    
     dat = dict()
     dat['timestamp'] = req['timestamp']
     dat['result'] = 'OK'
     data = json.dumps(dat)
+    
+    conn.close()
     return data
     
     #for queries:
     #req['timestamp]'
     #req['username']
+
+######################################################################################
+#   list_products()
+#   the following is borrowed from dellsworth@github.com/lost/src
+#   i dont think im getting the results I hope for here... 
+#   i had to remove "sec_" from a couple of parts of SQL to match my table
+#   
+######################################################################################
 
 @app.route('/rest/list_products', methods=('POST',))
 def list_products():
@@ -92,8 +132,8 @@ def list_products():
         SQLstart = """select vendor,description,string_agg(c.abbrv||':'||l.abbrv,',')
 from products p
 left join security_tags t on p.product_pk=t.product_fk
-left join sec_compartments c on t.compartment_fk=c.compartment_pk
-left join sec_levels l on t.level_fk=l.level_pk"""
+left join compartments c on t.compartment_fk=c.compartment_pk
+left join levels l on t.level_fk=l.level_pk"""
         if req['vendor']=='' and req['description']=='':
             # No filters, add the group by and query is ready to go
             SQLstart += " group by vendor,description"
@@ -211,11 +251,26 @@ def list_products():
 def add_products():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
+    else:
+        redirect('rest')
+
     #do queries
+    
+    conn = psycopg2.connect(dbname=dbname,host=dbhost,port=dbport)
+    cur  = conn.cursor()
+    
+    #SQL="""
+    #INSERT INTO TABLE products VALUES ( DEFAULT, %s, %s, %s, %s)
+    #"""    
+    #cur.execute(SQL, req['vendor'], req['description'], req['alt_description'], req['compartments'])
+
+
     dat = dict()
     dat['timestamp'] = req['timestamp']
     dat['result'] = 'OK'
     data = json.dumps(dat)
+    
+    conn.close()
     return data
 
     #for queries: req['new_products']
@@ -230,6 +285,17 @@ def add_products():
 def add_asset():
     if request.method=='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
+    else:
+        redirect('rest')
+
+    conn = psycopg2.connect(dbname=dbname,host=dbhost,port=dbport)
+    cur  = conn.cursor()
+    
+    #SQL="""
+    #INSERT INTO TABLE assets VALUES ( DEFAULT, %s, %s, %s, %s)
+    #"""    
+    #cur.execute(SQL, req['vendor'], req['description'], req['alt_description'], req['facility'])
+    
     dat = dict()
     dat['timestamp'] = req['timestamp']
     dat['result'] = 'OK'
@@ -301,7 +367,7 @@ def inventory():
 @app.route('/transit', methods=["POST"])
 def transit():
 
-    SQL = "SELECT request_id, asset_tag FROM assets a JOIN asset_on ao ON a.asset_pk = ao.asset_fk JOIN convoys c ON ao.convoy_fk=c.convoy_pk WHERE (ao.load_dt < now() and (aa.unload_dt is NULL or aa.unload_ft > %s)) or (WHERE source_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s) or WHERE dest_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s));"
+    SQL = "SELECT request_id , asset_tag FROM assets a JOIN asset_on ao ON a.asset_pk = ao.asset_fk JOIN convoys c ON ao.convoy_fk=c.convoy_pk WHERE (ao.load_dt < now() and (aa.unload_dt is NULL or aa.unload_ft > %s)) or (WHERE source_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s) or WHERE dest_fk = (SELECT facility_pk FROM facilities WHERE fcode = %s));"
     data = (1,2,)
     cur.execute(SQL, data1, data2, data2)
     result = cur.fetchall()
