@@ -6,9 +6,9 @@
 			<tr><th>Sign up for an account:</th></tr>
 			<tr><td><input type='text' name='username' placeholder='Create a Username' cols="16"/></td></tr>
 			<tr><td><input type='password' name='password' placeholder='Create a Password' cols="16"/></td></tr>
-			<tr><td> </td></tr>
 			<tr><td><button type="submit">Request access to LOST</button></td></tr>
+			<tr><td><a href='http://127.0.0.1:8080/'>Already registered?</a></td></tr>
 		</form></table>
-		<p><span style="color: red;">The username {{session.username}} is already taken, please choose another.</span></p>
+		<p><span style="color: red;">The username {{request.form['username']}} is already taken, please choose another.</span></p>
 		</body>
 </html>
