@@ -1,20 +1,20 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-#from config import dbname, dbhost, dbport
+from config import dbname, dbhost, dbport
 import psycopg2
-#import json
+import json
 #from datetime import datetime
 
 # GLOBALS #
 app = Flask(__name__)
 app.secret_key='c34f5286bed45063'
-dbname = 'lost'
-dbhost = '127.0.0.1'
-dbport = 5432
+#dbname = 'lost' 
+#dbhost = '127.0.0.1'
+#dbport = 5432
 conn = psycopg2.connect(dbname=dbname, host=dbhost, port=dbport)
 cur = conn.cursor()
 
 # PATHS #
-@app.route('/', methods=['GET'])
+@app.route('/')
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method =='GET':
@@ -89,6 +89,7 @@ def verify_password(name, string):
     user_res = cur.fetchall()
     print(user_res['password'] == string)
     return (user_res['password'] == string)
+#
 
 if __name__=='__main__':
     app.run(host='0.0.0.0', port=8080)

@@ -1,0 +1,10 @@
+{
+	"database":{
+		"dbname": "lost",
+		"dbhost": "http://127.0.0.1",
+		"dbport": 5432
+	}
+}
+
+
+
