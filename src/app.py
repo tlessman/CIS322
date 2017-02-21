@@ -49,7 +49,7 @@ def create_user():
     return render_template('create_user.html')
 #
 
-@app.route('/username_taken' methods=['POST'])
+@app.route('/username_taken' )
 def user_taken():
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form):
         if check_username(request.form['username']): 
