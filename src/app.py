@@ -49,13 +49,11 @@ def create_user():
     return render_template('create_user.html')
 #
 
-@app.route('/username_taken')
+@app.route('/username_taken' methods=['POST'])
 def user_taken():
-    if request.method == 'GET':
-        return render_template('user_taken.html')
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form):
         if check_username(request.form['username']): 
-            return render_template('username_taken.html')
+            return redirect(url_for('username_taken.html'))
         else:
             SQL = "INSERT INTO users (user_pk, username, password) VALUES (DEFAULT, %s, %s);"
             data = (request.form['username'], request.form['password'],)
@@ -72,6 +70,9 @@ def user_taken():
 def dashboard():
     return render_template('dashboard.html')
 
+@app.route('/logout', methods=['POST'])
+def logout():
+    return redirect(url_for("login"))
         
 # HELPERS #        
 def check_username(name):
@@ -86,7 +87,11 @@ def verify_password(name, string):
     SQL = "SELECT * FROM users WHERE username=%s;"
     data = (name,)
     cur.execute(SQL, data)
-    user_res = cur.fetchall()
+    user_res = cur.fetchone()
+    #SQL = "SELECT password FROM users WHERE user_pk = %s;"
+    #data = (user_res,)
+    #cur.execute(SQL, data)
+    #user_res = cur.fetchone()
     print(user_res['password'] == string)
     return (user_res['password'] == string)
 #
