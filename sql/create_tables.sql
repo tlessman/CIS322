@@ -7,10 +7,27 @@ This query creates a table 'users' which contains a serial 'user_pk' to use as u
  */
 
 CREATE TABLE users (
-	user_pk serial,
-	username varchar(16),
-	password varchar(16)
+	user_pk serial NOT NULL,
+	username varchar(16) NOT NULL UNIQUE,
+	password varchar(16) NOT NULL,
+	role_fk integer NOT NULL REFERENCES roles.role_pk
 );
 
+CREATE TABLE roles(
+	role_pk serial NOT NULL,
+	name varchar(16) NOT NULL
+);
+
+CREATE TABLE assets(
+	asset_pk serial NOT NULL,
+	asset_tag varchar(16) NOT NULL,
+	description varchar(64)
+);
+
+CREATE TABLE facilities)
+	facililty_pk serial NOT NULL,
+	common_name varchar(32) NOT NULL
+	fcode varchar(6) NOT NULL
+);
 
 
