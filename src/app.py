@@ -36,13 +36,26 @@ def create_user():
         return render_template('create_user.html')
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form): 
         if check_username(request.form['username']):
-            return render_template('username_taken.html')
+            return redirect(url_for('user_taken'))
         else:
-            SQL = "INSERT INTO users (user_pk, username, password) VALUES (DEFAULT, %s, %s);"
-            data = (request.form['username'], request.form['password'],)
-            cur.execute(SQL, data)
+            username = request.form['username']
+            password = request.form['password']
+            role = request.form['role']
+            cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(username,password,role))
+#            data = (request.form['username'], request.form['password'], request.form['role'],)
+#            cur.execute(SQL, data)
             conn.commit()
+            
+            #SQL = "INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, %s, %s, %s, TRUE);"
+            #data = (request.form['username'], request.form['password'], request.form['role'],)
+            #cur.execute(SQL, data)
+            #conn.commit()
             session['username']=request.form['username']
+            #SQL = "SELECT role FROM users WHERE usename = %s;"
+            #data = {{session.username}} 
+            #cur.execute(SQL, data)
+            #role_res = cur.fetchone()
+            #session['role']=role_res
             return redirect(url_for('dashboard')) 
         #
     #
@@ -53,21 +66,29 @@ def create_user():
 def user_taken():
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form):
         if check_username(request.form['username']): 
-            return redirect(url_for('username_taken.html'))
+            return redirect(url_for('create_user.html'))
         else:
-            SQL = "INSERT INTO users (user_pk, username, password) VALUES (DEFAULT, %s, %s);"
-            data = (request.form['username'], request.form['password'],)
+            SQL = "INSERT INTO users (user_pk, username, password, role, active,) VALUES (DEFAULT, %s, %s, %s, TRUE,);"
+            data = (request.form['username'], request.form['password'], request.form['role'],)
             cur.execute(SQL, data)
             conn.commit()
             session['username']=request.form['username']
-            return redirect(url_for("dashboard")) 
+            SQL = "SELECT role FROM users WHERE usename = %s;"
+            data = session['username']
+            cur.execute(SQL, data)
+            role_res = cur.fetchone()
+            session['role']=role_res
+            return redirect(url_for('dashboard')) 
+
         #
     #
     return render_template('user_taken.html')
 #
 
-@app.route('/dashboard', methods=['GET', 'POST'])
+@app.route('/dashboard', methods=['GET','POST'])
 def dashboard():
+    if request.method == 'POST':
+        return render_template('dashboard.html')
     return render_template('dashboard.html')
 
 @app.route('/logout', methods=['POST'])

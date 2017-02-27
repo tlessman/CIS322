@@ -4,8 +4,10 @@
 		<h3>LOST Asset Tracking System</h3>
 		<table><form action={{url_for('create_user')}} method="POST">
 			<tr><th>Sign up for an account:</th></tr>
-			<tr><td><input type='text' name='username' placeholder='Create a Username' cols="16"/></td></tr>
-			<tr><td><input type='password' name='password' placeholder='Create a Password' cols="16"/></td></tr>
+			<tr><td><input type='text' name='username' placeholder='Create a Username' cols="16" maxlength="16"/></td></tr>
+			<tr><td><input type='password' name='password' placeholder='Create a Password' cols="16" maxlength="16"/></td></tr>
+			<tr><td>Logistics User</td><td><input type='radio' name='role' value='0' checked/></td></tr>
+			<tr><td>Facilities User</td><td><input type='radio' name='role' value='1'/></td></tr></table></tr>
 			<tr><td><button type="submit">Request access to LOST</button></td></tr>
 			<tr><td><a href='http://127.0.0.1:8080/'>Already resgistered?</a></td></tr>
 		</form></table>

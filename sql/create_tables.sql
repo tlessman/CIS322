@@ -7,32 +7,32 @@ This query creates a table 'users' which contains a serial 'user_pk' to use as u
  */
 
 CREATE TABLE users (
-	user_pk serial NOT NULL,
+	user_pk serial NOT NULL UNIQUE,
 	username varchar(16) NOT NULL UNIQUE,
 	password varchar(16) NOT NULL,
-	role boolean NOT NULL,
+	role integer NOT NULL,
 	active boolean NOT NULL
 );
 
-/*I do not think that I need roles as a separate table.  I only have two roles as of now so I am using boolean, but if others were added at a later time, changing to an int would allow for same use without overhead of a joined table. Logistics = 0; Facilities = 1; */
+/*I do not think that I need roles as a separate table.  I only have two roles as of now, but others can be added at a later time. I am using int so it would allow for same use without overhead of a joined table. Logistics = 0; Facilities = 1; */
 
 CREATE TABLE assets (
-	asset_pk serial NOT NULL,
+	asset_pk serial NOT NULL UNIQUE,
 	asset_tag varchar(16) NOT NULL,
 	description varchar(64)
 );
 
 CREATE TABLE facilities (
-	facililty_pk serial NOT NULL,
-	common_name varchar(32) NOT NULL
+	facility_pk serial NOT NULL UNIQUE,
+	common_name varchar(32) NOT NULL,
 	fcode varchar(6) NOT NULL
 );
 
 /*Here, I am choosing to connect assets and facilities to an asset_status table.  I hope to later utilize this one table to reflect transit too, however, may change if that is not optimal.*/
 
 CREATE TABLE asset_status (
-	asset_fk integer REFERENCES assets.asset_pk,
-	facility_fk integer REFERENCES facilities.facility_pk,
+	asset_fk integer REFERENCES assets(asset_pk),
+	facility_fk integer REFERENCES facilities(facility_pk),
 	arrival_dt date,
 	departure_dt date,
 	disposed boolean NOT NULL
