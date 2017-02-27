@@ -1,0 +1,13 @@
+<html>
+	<body>
+		<h1>OSNAP</h1>
+		<h3>LOST Asset Tracking System</h3>
+		<table><form action={{url_for('add_asset')}} method="POST">
+				<p>LOST knows of the following assets: </p>
+			<tr><th>Add a new asset:</th></tr>
+			<tr><td><input type='text' name='asset_tag' placeholder='DMNP100-y' cols="16" maxlength="16"/></td></tr>
+			<tr><td><input type='text' name='description' placeholder='Dunder Mifflin Notepad 100pg, yellow' cols="64" maxlength="64"/></td></tr>		
+			<tr><td><button type="submit">Add asset to LOST</button></td></tr>
+		</form></table>
+	</body>
+</html>
