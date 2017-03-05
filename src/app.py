@@ -101,16 +101,16 @@ def add_facility():
     return render_template('login.html')
 
 @app.route('/asset_report', methods=['GET', 'POST'])
-def *():
+#def *():
 
 @app.route('/transfer_report', methods=['GET', 'POST'])
-def *():
+#def *():
 
 @app.route('/dispose_asset', methods=['GET', 'POST'])
-def *():
+#def *():
 
 @app.route('/transfer_req', methods=['GET', 'POST'])
-def *():
+#def *():
 
 @app.route('/add_asset', methods=['GET', 'POST'])
 def add_asset():
@@ -127,7 +127,7 @@ def add_asset():
     return render_template('login.html')
 
 @app.route('/dispose_asset', methods=['GET', 'POST'])
-def *():
+#def *():
 
 @app.route('/logout', methods=['GET'])
 def logout():
