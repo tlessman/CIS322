@@ -18,6 +18,7 @@ cur = conn.cursor()
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method =='GET':
+        session['error'] = ""
         return render_template('login.html')
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
         if not check_username(request.form['username']):
@@ -44,11 +45,11 @@ def create_user():
             cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(username,password,role))
             conn.commit() 
             session['username']=request.form['username']
-            #SQL = "SELECT role FROM users WHERE usename = %s;"
-            #data = {{session.username}} 
-            #cur.execute(SQL, data)
-            #role_res = cur.fetchone()
-            #session['role']=role_res
+            "SELECT role FROM users WHERE usename = %s;"
+            session_data = {{session.username}} 
+            cur.execute("SELECT FROM users WHERE username = %s);"%(session_data))
+            role_res = cur.fetchone()
+            session['role']=role_res
             return redirect(url_for('dashboard')) 
         #
     #
@@ -99,6 +100,18 @@ def add_facility():
         return redirect(url_for('add_facility'))
     return render_template('login.html')
 
+@app.route('/asset_report', methods=['GET', 'POST'])
+def *():
+
+@app.route('/transfer_report', methods=['GET', 'POST'])
+def *():
+
+@app.route('/dispose_asset', methods=['GET', 'POST'])
+def *():
+
+@app.route('/transfer_req', methods=['GET', 'POST'])
+def *():
+
 @app.route('/add_asset', methods=['GET', 'POST'])
 def add_asset():
     if request.method == 'GET':
@@ -113,10 +126,18 @@ def add_asset():
         return redirect(url_for('add_asset'))
     return render_template('login.html')
 
+@app.route('/dispose_asset', methods=['GET', 'POST'])
+def *():
 
-@app.route('/logout', methods=['POST'])
+@app.route('/logout', methods=['GET'])
 def logout():
     return redirect(url_for("login"))
+
+#_/CLIPBOARD\_____________________________
+#@app.route('/*', methods=['GET', 'POST'])
+#def *():
+#_________________________________________
+
         
 # HELPERS #        
 def check_username(name):

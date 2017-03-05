@@ -28,12 +28,30 @@ CREATE TABLE facilities (
 	fcode varchar(6) NOT NULL
 );
 
-/*Here, I am choosing to connect assets and facilities to an asset_status table.  I hope to later utilize this one table to reflect transit too, however, may change if that is not optimal.*/
+/*Here, I am choosing to connect assets and facilities to an asset_at table.*/
 
-CREATE TABLE asset_status (
+CREATE TABLE asset_at (
 	asset_fk integer REFERENCES assets(asset_pk),
 	facility_fk integer REFERENCES facilities(facility_pk),
-	arrival_dt date,
-	departure_dt date,
+	arrival_dt timestamp,
+	departure_dt timestamp,
 	disposed boolean NOT NULL
 );
+
+CREATE TABLE request ( /*can i reference an fk with an fk? in order to get the approver, or specific source location for transit?*/
+	requester_fk integer REFERENCES users(user_pk),
+	asset_fk integer REFERENCES assets(asset_pk),
+	facility_src_fk integer REFERENCES facilities(facility_fk),
+	facility_dest_fk integer REFERENCES facilities(facility_fk),
+	request_dt timestamp,
+	approver_fk integer REFERENCES users(user_pk),
+	approval_dt timestamp
+);
+
+CREATE TABLE transit (
+	facility_src_fk integer REFERENCES facilities(facility_fk),
+	load_dt timestamp,
+	facility_dest_fk integer REFERENCES facilities(facility_fk),
+	unload_dt timestamp
+);
+
