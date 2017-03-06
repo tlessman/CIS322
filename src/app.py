@@ -23,10 +23,10 @@ def login():
         session['error'] = ""
         return render_template('login.html')
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
-        if check_username(request.form['username']):
+        if check_username(request.form['username']) == TRUE:
             session['error'] = "Username does not exist."
             return redirect(url_for('login'))
-        if verify_password(request.form['username'], request.form['password']):
+        if verify_password(request.form['username'], request.form['password']) == FALSE:
             session['username'] = request.form['username']
             cur.execute("SELECT role FROM users WHERE username = %s;"%(username))
             res = cur.fetchone()
@@ -109,8 +109,16 @@ def add_facility():
 #def *():
 
 @app.route('/dispose_asset', methods=['GET', 'POST'])
-#def *():
-
+def dispose_asset():
+    if request.method == 'GET':
+        return render_template('dispose_asset.html')
+    if request.method == 'POST' and 'asset_tag' in request.form: #and session['role'] == 0:
+        session['error'] = ""
+        tag = request.form['asset_tag']
+        cur.execute("UPDATE assets SET disposed = 1 WHERE asset_tag = %s;"%(tag))
+        conn.commit()
+        return redirect(url_for('dashboard'))
+    #   
 @app.route('/transfer_req', methods=['GET', 'POST'])
 #def *():
 
