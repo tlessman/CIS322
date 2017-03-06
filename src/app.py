@@ -20,11 +20,11 @@ cur = conn.cursor()
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method =='GET':
-        #session['error'] = ""
+        session['error'] = ""
         return render_template('login.html')
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
-        if not check_username(request.form['username']):
-            #session['error'] = "Username does not exist."
+        if check_username(request.form['username']):
+            session['error'] = "Username does not exist."
             return redirect(url_for('login'))
         if verify_password(request.form['username'], request.form['password']):
             session['username'] = request.form['username']
@@ -35,7 +35,7 @@ def login():
             return redirect(url_for('dashboard'))
         else:
             session['error'] = "Invalid password."
-            return redirect(url_for('invalid_credentials'))
+            return redirect(url_for('login'))
     return render_template('login.html', dbname=dbname, dbhost=dbhost, dbport=dbport)
 #
 
@@ -86,7 +86,7 @@ def username_taken():
 def dashboard():
     #if session['logged_in'] == FALSE:
     #    session['error'] = "Unauthorized access."
-    #    return redirect(url_for("login"))
+    #    return redirect(url_for('login'))
     return render_template('dashboard.html')
 
 @app.route('/add_facility', methods=['GET','POST'])
@@ -133,7 +133,7 @@ def add_asset():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    #session['logged_in'] = FALSE
+    session.clear()
     return redirect(url_for("login"))
 
 #_/CLIPBOARD\_____________________________
@@ -154,8 +154,6 @@ def check_username(name):
 def verify_password(name, string):
     cur.execute("SELECT password FROM users WHERE username = %s;"%(name))
     user_res = cur.fetchone()
-    #cur.execute("SELECT password FROM users where user_pk = '%s';"%user_res()
-    #user_res = cur.fetchone()
     print(user_res['password'] == string)
     return (user_res['password'] == string)
 #
