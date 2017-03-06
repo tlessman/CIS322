@@ -87,7 +87,8 @@ def user_taken():
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
     if session['logged_in'] == FALSE:
-
+        session['error'] = "Unauthorized access."
+        return redirect(url_for("login"))
     return render_template('dashboard.html')
 
 @app.route('/add_facility', methods=['GET','POST'])
