@@ -12,21 +12,25 @@ app.secret_key='c34f5286bed45063'
 #dbport = 5432
 conn = psycopg2.connect(dbname=dbname, host=dbhost, port=dbport)
 cur = conn.cursor()
-session['logged_in'] = FALSE
+#session['logged_in'] = FALSE
+
 
 # PATHS #
 @app.route('/')
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method =='GET':
-        session['error'] = ""
+        #session['error'] = ""
         return render_template('login.html')
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
         if not check_username(request.form['username']):
-            session['error'] = "Username does not exist."
+            #session['error'] = "Username does not exist."
             return redirect(url_for('login'))
         if verify_password(request.form['username'], request.form['password']):
             session['username'] = request.form['username']
+            cur.execute("SELECT role FROM users WHERE username = %s;"%(username))
+            res = cur.fetchone()
+            session['role'] = res
             session['logged_in'] = TRUE
             return redirect(url_for('dashboard'))
         else:
@@ -49,20 +53,14 @@ def create_user():
             role = request.form['role']
             cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(username,password,role))
             conn.commit() 
-            session['username']=request.form['username']
-            "SELECT role FROM users WHERE usename = %s;"
-            session_data = {{session.username}} 
-            cur.execute("SELECT FROM users WHERE username = %s);"%(session_data))
-            role_res = cur.fetchone()
-            session['role']=role_res
-            return redirect(url_for('dashboard')) 
+            return redirect(url_for('login')) 
         #
     #
     return render_template('create_user.html')
 #
 
-@app.route('/username_taken' )
-def user_taken():
+@app.route('/username_taken', methods = ['GET', 'POST'])
+def username_taken():
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form):
         if check_username(request.form['username']): 
             return redirect(url_for('create_user'))
@@ -84,11 +82,11 @@ def user_taken():
     return render_template('create_user.html')
 #
 
-@app.route('/dashboard', methods=['GET'])
+@app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    if session['logged_in'] == FALSE:
-        session['error'] = "Unauthorized access."
-        return redirect(url_for("login"))
+    #if session['logged_in'] == FALSE:
+    #    session['error'] = "Unauthorized access."
+    #    return redirect(url_for("login"))
     return render_template('dashboard.html')
 
 @app.route('/add_facility', methods=['GET','POST'])
@@ -133,9 +131,9 @@ def add_asset():
 @app.route('/dispose_asset', methods=['GET', 'POST'])
 #def *():
 
-@app.route('/logout', methods=['GET'])
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    session['logged_in'] = FALSE
+    #session['logged_in'] = FALSE
     return redirect(url_for("login"))
 
 #_/CLIPBOARD\_____________________________
@@ -146,7 +144,7 @@ def logout():
         
 # HELPERS #        
 def check_username(name):
-    SQL = "SELECT * FROM users WHERE username='%s';"
+    SQL = "SELECT * FROM users WHERE username=%s;"
     data = (name,)
     cur.execute(SQL, data)
     user_res = cur.fetchall()
@@ -154,7 +152,7 @@ def check_username(name):
 #
 
 def verify_password(name, string):
-    cur.execute("SELECT password FROM users WHERE username = '%s';"%(name))
+    cur.execute("SELECT password FROM users WHERE username = %s;"%(name))
     user_res = cur.fetchone()
     #cur.execute("SELECT password FROM users where user_pk = '%s';"%user_res()
     #user_res = cur.fetchone()
