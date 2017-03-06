@@ -12,6 +12,7 @@ app.secret_key='c34f5286bed45063'
 #dbport = 5432
 conn = psycopg2.connect(dbname=dbname, host=dbhost, port=dbport)
 cur = conn.cursor()
+session['logged_in'] = FALSE
 
 # PATHS #
 @app.route('/')
@@ -22,12 +23,15 @@ def login():
         return render_template('login.html')
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
         if not check_username(request.form['username']):
-            render_template('create_user.html')
+            session['error'] = "Username does not exist."
+            return redirect(url_for('login'))
         if verify_password(request.form['username'], request.form['password']):
-            session['username']=request.form['username']
+            session['username'] = request.form['username']
+            session['logged_in'] = TRUE
             return redirect(url_for('dashboard'))
         else:
-            return render_template('invalid_credentials.html')
+            session['error'] = "Invalid password."
+            return redirect(url_for('invalid_credentials'))
     return render_template('login.html', dbname=dbname, dbhost=dbhost, dbport=dbport)
 #
 
@@ -37,7 +41,8 @@ def create_user():
         return render_template('create_user.html')
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form): 
         if check_username(request.form['username']):
-            return redirect(url_for('user_taken'))
+            session['error'] = "Username already exists."
+            return redirect(url_for('username_taken'))
         else:
             username = request.form['username']
             password = request.form['password']
@@ -61,31 +66,29 @@ def user_taken():
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form):
         if check_username(request.form['username']): 
             return redirect(url_for('create_user'))
-        else:
-            SQL = "INSERT INTO users (user_pk, username, password, role, active,) VALUES (DEFAULT, %s, %s, %s, TRUE,);"
-            data = (request.form['username'], request.form['password'], request.form['role'],)
-            cur.execute(SQL, data)
-            conn.commit()
-            session['username']=request.form['username']
-            SQL = "SELECT role FROM users WHERE usename = %s;"
-            data = session['username']
-            cur.execute(SQL, data)
-            role_res = cur.fetchone()
-            session['role']=role_res
-            return redirect(url_for('dashboard')) 
+#        else:
+#            SQL = "INSERT INTO users (user_pk, username, password, role, active,) VALUES (DEFAULT, %s, %s, %s, TRUE,);"
+#            data = (request.form['username'], request.form['password'], request.form['role'],)
+#            cur.execute(SQL, data)
+#            conn.commit()
+#            session['username']=request.form['username']
+#            SQL = "SELECT role FROM users WHERE usename = %s;"
+#            data = session['username']
+#            cur.execute(SQL, data)
+#            role_res = cur.fetchone()
+#            session['role']=role_res
+#            return redirect(url_for('dashboard')) 
 
         #
     #
-    return render_template('user_taken.html')
+    return render_template('create_user.html')
 #
 
-@app.route('/dashboard', methods=['GET','POST'])
+@app.route('/dashboard', methods=['GET'])
 def dashboard():
-    if request.method == 'GET':
-        return render_template('login.html')
-    if request.method == 'POST':
-        return render_template('dashboard.html')
-    return render_template('login.html')
+    if session['logged_in'] == FALSE:
+
+    return render_template('dashboard.html')
 
 @app.route('/add_facility', methods=['GET','POST'])
 def add_facility():
@@ -131,6 +134,7 @@ def add_asset():
 
 @app.route('/logout', methods=['GET'])
 def logout():
+    session['logged_in'] = FALSE
     return redirect(url_for("login"))
 
 #_/CLIPBOARD\_____________________________
@@ -141,7 +145,7 @@ def logout():
         
 # HELPERS #        
 def check_username(name):
-    SQL = "SELECT * FROM users WHERE username=%s;"
+    SQL = "SELECT * FROM users WHERE username='%s';"
     data = (name,)
     cur.execute(SQL, data)
     user_res = cur.fetchall()
@@ -149,14 +153,10 @@ def check_username(name):
 #
 
 def verify_password(name, string):
-    SQL = "SELECT * FROM users WHERE username=%s;"
-    data = (name,)
-    cur.execute(SQL, data)
+    cur.execute("SELECT password FROM users WHERE username = '%s';"%(name))
     user_res = cur.fetchone()
-    SQL = "SELECT password FROM users WHERE user_pk = '%s';"
-    data = (user_res,)
-    cur.execute(SQL, data)
-    user_res = cur.fetchone()
+    #cur.execute("SELECT password FROM users where user_pk = '%s';"%user_res()
+    #user_res = cur.fetchone()
     print(user_res['password'] == string)
     return (user_res['password'] == string)
 #

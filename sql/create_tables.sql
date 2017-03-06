@@ -41,17 +41,17 @@ CREATE TABLE asset_at (
 CREATE TABLE request ( /*can i reference an fk with an fk? in order to get the approver, or specific source location for transit?*/
 	requester_fk integer REFERENCES users(user_pk),
 	asset_fk integer REFERENCES assets(asset_pk),
-	facility_src_fk integer REFERENCES facilities(facility_fk),
-	facility_dest_fk integer REFERENCES facilities(facility_fk),
+	facility_src_fk integer REFERENCES facilities(facility_pk),
+	facility_dest_fk integer REFERENCES facilities(facility_pk),
 	request_dt timestamp,
 	approver_fk integer REFERENCES users(user_pk),
 	approval_dt timestamp
 );
 
 CREATE TABLE transit (
-	facility_src_fk integer REFERENCES facilities(facility_fk),
+	facility_src_fk integer REFERENCES facilities(facility_pk),
 	load_dt timestamp,
-	facility_dest_fk integer REFERENCES facilities(facility_fk),
+	facility_dest_fk integer REFERENCES facilities(facility_pk),
 	unload_dt timestamp
 );
 
