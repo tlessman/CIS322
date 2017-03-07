@@ -33,12 +33,11 @@ CREATE TABLE facilities (
 CREATE TABLE asset_at (
 	asset_fk integer REFERENCES assets(asset_pk),
 	facility_fk integer REFERENCES facilities(facility_pk),
-	arrival_dt timestamp,
-	departure_dt timestamp,
+	acquired_dt timestamp,
 	disposed boolean NOT NULL
 );
 
-CREATE TABLE request ( /*can i reference an fk with an fk? in order to get the approver, or specific source location for transit?*/
+CREATE TABLE request ( 
 	requester_fk integer REFERENCES users(user_pk),
 	asset_fk integer REFERENCES assets(asset_pk),
 	facility_src_fk integer REFERENCES facilities(facility_pk),
