@@ -1,0 +1,16 @@
+lost=# SELECT * FROM assets a INNER JOIN asset_at aa ON (a.asset_pk = aa.asset_fk) INNER JOIN facilities f ON (f.facility_pk = aa.facility_fk) WHERE disposed = FALSE;
+ asset_pk |  asset_tag  |     description      | asset_fk | facility_fk |     acquired_dt     | disposed | facility_pk | common_name  | fcode
+----------+-------------+----------------------+----------+-------------+---------------------+----------+-------------+--------------+-------
+        1 | MIB NC-5000 | Noisy Cricket        |        1 |           1 | 2017-03-06 00:00:00 | f        |           1 | Headquarters | HQ
+        2 | LOST ST-WT  | LOST Sticker - White |        2 |           3 | 2017-03-06 00:00:00 | f        |           3 | Moon Base 5  | MB005
+        5 | MIB NX-5500 | Noisy Cricket NX     |        5 |           3 | 2017-03-06 00:00:00 | f        |           3 | Moon Base 5  | MB005
+(3 rows)
+
+lost=# SELECT a.asset_tag, f.fcode, aa.acquired_dt FROM assets a INNER JOIN asset_at aa ON (a.asset_pk = aa.asset_fk) INNER JOIN facilities f ON (f.facility_pk = aa.facility_fk) WHERE disposed = FALSE;
+  asset_tag  | fcode |     acquired_dt
+-------------+-------+---------------------
+ MIB NC-5000 | HQ    | 2017-03-06 00:00:00
+ LOST ST-WT  | MB005 | 2017-03-06 00:00:00
+ MIB NX-5500 | MB005 | 2017-03-06 00:00:00
+(3 rows)
+
