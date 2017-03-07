@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from config import dbname, dbhost, dbport
 import psycopg2
 import json
-#from datetime import datetime
+from datetime import datetime
 
 # GLOBALS #
 app = Flask(__name__)
@@ -14,6 +14,50 @@ conn = psycopg2.connect(dbname=dbname, host=dbhost, port=dbport)
 cur = conn.cursor()
 #session['logged_in'] = FALSE
 
+# REST FUNCTIONS #
+@app.route('/rest')
+def rest():
+    if request.method == 'GET':
+        return render_template('rest.html')
+    if request.method == 'POST':
+        return render_template('rest.html')
+    return render_tempate('rest.html')
+
+@app.route('/rest/activate_user', methods=['POST'])
+def activate_user():
+    if request.method =='POST' and 'arguements' in request.form:
+        req=json.loads(request.form['arguements'])
+    else:
+        return redirect(url_for('rest'))
+    ##if user exists and is inactive, do:
+    cur.execute('SELECT * FROM users WHERE (username ~~* %s and active ==0;'%(req['username']))
+    res = cur.fetchall()
+    if res[user_pk]:
+        cur.execute('UPDATE users SET active = TRUE WHERE username == %s;'%(req['username']))
+        conn.commit()
+        dat = dict()
+        dat['timestamp'] = req['timestamp']
+        dat['result'] = 'OK'
+        data = json.dumps(dat)
+        return data
+
+@app.route('/rest/suspend_user', methods=['POST'])
+def suspend_user():
+    if request.method =='POST' and 'arguements' in request.form:
+        req=json.loads(request.form['arguements'])
+    else:
+        return redirect(url_for('rest'))
+    ##if user exists and is active, do:
+    cur.execute('SELECT * FROM users WHERE (username ~~* %s and active ==1;'%(req['username']))
+    res = cur.fetchall()
+    if res[user_pk]:
+        cur.execute('UPDATE users SET active = FALSE WHERE username == %s;'%(req['username']))
+        conn.commit()
+        dat = dict()
+        dat['timestamp'] = req['timestamp']
+        dat['result'] = 'OK'
+        data = json.dumps(dat)
+        return data
 
 # PATHS #
 @app.route('/')
