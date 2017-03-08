@@ -1,15 +1,15 @@
 
 <html>
 	<body>
-		<h1>OSNAP</h1>
-		<h3>LOST Asset Tracking System</h3>
-		<p><span style="color=red">{{session.error}}</span></p>
-		<table><form action={{url_for('dashboard')}} method="POST">
-			<tr><th>Enter your credentials:</th></tr>
-			<tr><td><input type='text' name='username' placeholder='Enter your Username' cols="16"/></td></tr>
-			<tr><td><input type='password' name='password' placeholder='Enter your Password' cols="16"/></td></tr>
-			<tr><td><button type="submit">Authenticate</button></td></tr>
-			<tr><td><a href='http://127.0.0.1:8080/create_user'>Dont have an account?</a></td></tr>
+	<h1>OSNAP</h1>
+	<h3>LOST Asset Tracking System</h3>
+	<p><span style="color=red">{{session.error}}</span></p>
+	<table><form action={{url_for('dashboard')}} method="POST">
+		<tr><th>Enter your credentials:</th></tr>
+		<tr><td><input type='text' name='username' placeholder='Enter your Username' cols="16"/></td></tr>
+		<tr><td><input type='password' name='password' placeholder='Enter your Password' cols="16"/></td></tr>
+		<tr><td><button type="submit">Authenticate</button></td></tr>
+		<tr><td><a href={{url_for('create_user')}}>Dont have an account?</a></td></tr>
 		</form></table>
 	</body>
 </html>

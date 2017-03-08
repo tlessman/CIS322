@@ -1,3 +1,13 @@
+"""SELECT asset_tag, requester, request_dt, approver, approval_dt, src, dest, load_dt, unload_dt 
+FROM assets a 
+    JOIN asset_at aa ON (a.asset_pk = aa.asset_fk) 
+    JOIN facilities f ON (f.facility_pk = aa.facility_fk) 
+    JOIN users u ON (u.user_pk = requester_fk)
+    JOIN users u ON (u.user_pk = approver_fk)
+    JOIN transit t ON (f.facility_pk = t.src_facility_fk)
+    JOIN transit t ON (f.facility_pk = t.dest_facility_fk)
+WHERE disposed = FALSE;"""
+
 from flask import Flask, render_template, request, session, redirect, url_for
 from config import dbname, dbhost, dbport
 import psycopg2
@@ -67,7 +77,7 @@ def login():
         session['error'] = ""
         return render_template('login.html')
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
-        if check_username(request.form['username']) == TRUE:
+        if check_username(request.form['username']) == FALSE:
             session['error'] = "Username does not exist."
             return redirect(url_for('login'))
         if verify_password(request.form['username'], request.form['password']) == FALSE:
@@ -206,8 +216,7 @@ def check_username(name):
 def verify_password(name, string):
     cur.execute("SELECT password FROM users WHERE username = %s;"%(name))
     user_res = cur.fetchone()
-    print(user_res['password'] == string)
-    return (user_res['password'] == string)
+    return user_res('password',) == string
 #
 
 if __name__=='__main__':
