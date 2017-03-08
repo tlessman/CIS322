@@ -8,6 +8,14 @@ In this directory:
 * export_data.py
 	Needed for export_data.sh. Uses psycopg2 to copy data from database tables into separate .csv files, then groups each file into export_data.csv.
 
+Needed before running script:
+* a directory in which you wish to export to
+* database with the following tables:
+	-assets
+	-facilities
+	-transfers(transit, request)
+	-users
+
 Created by this script:
 * assets.csv
 * facilities.csv
