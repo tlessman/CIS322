@@ -1,0 +1,7 @@
+user_pk,username,password,role,active
+1,Log1,log1,0,t
+2,Fac1,fac1,1,t
+3,Log2,log2,0,t
+4,Sus1,sus1,0,f
+5,Act1,act1,0,t
+6,Fac2,fac2,1,t
