@@ -20,16 +20,16 @@ INSERT INTO assets (asset_pk, asset_tag, description) VALUES (DEFAULT, 'LOST ST-
 INSERT INTO assets (asset_pk, asset_tag, description) VALUES (DEFAULT, 'MIB NX-5500', 'Noisy Cricket NX');
 
 /*INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed,) VALUES (SQL, SQL, 'datetime.datetime.utcnow().isoformat()', '0',);*/
-INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed) VALUES (1, 1, '2017-03-06 00:00:00', '0');
-INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed) VALUES (2, 3, '2017-03-06 00:00:00', '0');
-INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed) VALUES (5, 3, '2017-03-06 00:00:00', '0');
-INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed) VALUES (4, 1, '2017-03-06 00:00:00', '1');
+INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed, disposed_dt) VALUES (1, 1, '2017-03-06 00:00:00', '0');
+INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed, disposed_dt) VALUES (2, 3, '2017-03-06 00:00:00', '0');
+INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed, disposed_dt) VALUES (5, 3, '2017-03-06 00:00:00', '0');
+INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed, disposed_dt) VALUES (4, 1, '2017-03-06 00:00:00', '1', 2017-13-16 12:34:56);
 
-/*INSERT INTO request (requester_fk, asset_fk, facility_src_fk, facility_dest_fk, request_dt, approver_fk, approval_dt) VALUES (SQL, SQL, SQL, SQL, 'datetime.datetime.utcnow().isoformat()', SQL, 'datetime.datetime.utcnow().isoformat()',);*/
-INSERT INTO request (requester_fk, asset_fk, facility_src_fk, facility_dest_fk, request_dt, approver_fk, approval_dt) VALUES ('1', '1', '2', '4', '2017-03-06 00:00:00', '2', '2017-03-06 00:00:00');
-INSERT INTO request (requester_fk, asset_fk, facility_src_fk, facility_dest_fk, request_dt, approver_fk, approval_dt) VALUES ('1', '1', '2', '3', '2017-03-06 00:00:00', 2, '2017-03-06 00:00:00');
+/*INSERT INTO request (req_user_fk, asset_fk, src_fk, fk, request_dt, app_user_fk, approved_dt) VALUES (SQL, SQL, SQL, SQL, 'datetime.datetime.utcnow().isoformat()', SQL, 'datetime.datetime.utcnow().isoformat()',);*/
+INSERT INTO request (req_user_fk, asset_fk, src_fk, dest_fk, request_dt, app_user_fk, approved_dt) VALUES ('1', '1', '2', '4', '2017-03-06 00:00:00', '2', '2017-03-06 00:00:00');
+INSERT INTO request (req_user_fk, asset_fk, src_fk, dest_fk, request_dt, app_user_fk, approved_dt) VALUES ('1', '1', '2', '3', '2017-03-06 00:00:00', 2, '2017-03-06 00:00:00');
 
-/*INSERT INTO transit(facility_src_fk, load_dt, facility_dest_fk, unload_dt,) VALUES (SQL, 'datetime.datetime.utcnow().isoformat()', SQL, 'datetime.datetime.utcnow().isoformat()',);*/
-INSERT INTO transit(facility_src_fk, load_dt, facility_dest_fk, unload_dt) VALUES ('2', '2017-03-06 00:00:00', '3', '2017-03-06 00:00:00');
+/*INSERT INTO transit(src_fk, load_dt, dest_fk, unload_dt,) VALUES (SQL, 'datetime.datetime.utcnow().isoformat()', SQL, 'datetime.datetime.utcnow().isoformat()',);*/
+INSERT INTO transit(src_fk, load_dt, dest_fk, unload_dt) VALUES ('2', '2017-03-06 00:00:00', '3', '2017-03-06 00:00:00');
 
 
