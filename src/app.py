@@ -197,7 +197,13 @@ def check_username(name):
     data = (name,)
     cur.execute(SQL, data)
     user_res = cur.fetchall()
-    return bool(user_res)
+    if bool(user_res):
+        if user_res['username'] = data:
+            return True
+        else:
+            return False
+    else:
+        return False
 #
 
 def verify_password(name, string):
