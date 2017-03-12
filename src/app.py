@@ -1,11 +1,11 @@
-"""SELECT asset_tag, requester, request_dt, approver, approval_dt, src, dest, load_dt, unload_dt 
+"""SELECT asset_tag,username,request_dt,approved_dt,load_dt, unload_dt 
 FROM assets a 
-    JOIN asset_at aa ON (a.asset_pk = aa.asset_fk) 
-    JOIN facilities f ON (f.facility_pk = aa.facility_fk) 
-    JOIN users u ON (u.user_pk = requester_fk)
-    JOIN users u ON (u.user_pk = approver_fk)
-    JOIN transit t ON (f.facility_pk = t.src_facility_fk)
-    JOIN transit t ON (f.facility_pk = t.dest_facility_fk)
+    JOIN asset_at at ON (a.asset_pk = at.asset_fk) 
+    JOIN facilities f ON (f.facility_pk = at.facility_fk) 
+    JOIN users u ON (u.user_pk = req_user_fk)
+    JOIN users u ON (u.user_pk = app_user_fk)
+    JOIN transit t ON (f.facility_pk = t.src_fk)
+    JOIN transit t ON (f.facility_pk = t.dest_fk)
 WHERE disposed = FALSE;"""
 
 from flask import Flask, render_template, request, session, redirect, url_for
@@ -35,8 +35,8 @@ def rest():
 
 @app.route('/rest/activate_user', methods=['POST'])
 def activate_user():
-    if request.method =='POST' and 'arguements' in request.form:
-        req=json.loads(request.form['arguements'])
+    if request.method =='POST' and 'arguments' in request.form:
+        req=json.loads(request.form['arguments'])
     else:
         return redirect(url_for('rest'))
     ##if user exists and is inactive, do:
@@ -53,8 +53,8 @@ def activate_user():
 
 @app.route('/rest/suspend_user', methods=['POST'])
 def suspend_user():
-    if request.method =='POST' and 'arguements' in request.form:
-        req=json.loads(request.form['arguements'])
+    if request.method =='POST' and 'arguments' in request.form:
+        req=json.loads(request.form['arguments'])
     else:
         return redirect(url_for('rest'))
     ##if user exists and is active, do:
@@ -77,15 +77,15 @@ def login():
         session['error'] = ""
         return render_template('login.html')
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
-        if check_username(request.form['username']) == FALSE:
+        if check_username(request.form['username']) == False:
             session['error'] = "Username does not exist."
             return redirect(url_for('login'))
-        if verify_password(request.form['username'], request.form['password']) == FALSE:
+        if verify_password(request.form['username'], request.form['password']) == True:
             session['username'] = request.form['username']
             cur.execute("SELECT role FROM users WHERE username = %s;"%(username))
             res = cur.fetchone()
             session['role'] = res
-            session['logged_in'] = TRUE
+            session['logged_in'] = True
             return redirect(url_for('dashboard'))
         else:
             session['error'] = "Invalid password."
@@ -117,20 +117,7 @@ def create_user():
 def username_taken():
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form):
         if check_username(request.form['username']): 
-            return redirect(url_for('create_user'))
-#        else:
-#            SQL = "INSERT INTO users (user_pk, username, password, role, active,) VALUES (DEFAULT, %s, %s, %s, TRUE,);"
-#            data = (request.form['username'], request.form['password'], request.form['role'],)
-#            cur.execute(SQL, data)
-#            conn.commit()
-#            session['username']=request.form['username']
-#            SQL = "SELECT role FROM users WHERE usename = %s;"
-#            data = session['username']
-#            cur.execute(SQL, data)
-#            role_res = cur.fetchone()
-#            session['role']=role_res
-#            return redirect(url_for('dashboard')) 
-
+             return redirect(url_for('create_user'))
         #
     #
     return render_template('create_user.html')
@@ -216,7 +203,10 @@ def check_username(name):
 def verify_password(name, string):
     cur.execute("SELECT password FROM users WHERE username = %s;"%(name))
     user_res = cur.fetchone()
-    return user_res('password',) == string
+    if user_res['password'] == string:
+        return True
+    else:
+        return False
 #
 
 if __name__=='__main__':
