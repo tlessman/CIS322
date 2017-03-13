@@ -194,15 +194,15 @@ def logout():
         
 # HELPERS #        
 def check_usertaken(name):
-    SQL = "SELECT username FROM users WHERE username=%s;"
+    SQL = "SELECT username FROM users WHERE username = %s;"
     data = (name,)
     cur.execute(SQL, data)
-    user_res = cur.fetchone()
-    if bool(user_res):
+    user_res = cur.fetchone()[0]
+    if user_res == 1:
         return True
 #
 
-def verify login(name, string):
+def verify_login(name, string):
     cur.execute("SELECT username,password FROM users WHERE username = %s and password = %s;"%(name,string))
     user_res = cur.fetchone()[0]
     if user_res == 1:
