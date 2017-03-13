@@ -27,10 +27,10 @@ with open('./import/assets.csv', 'r') as f:
     conn.commit()
     
 
-SQL = "COPY transit,request(asset_tag, requester, request_dt, approve_dt, src, dest, load_dt, unload_dt) FROM stdin WITH CSV HEADER DELIMITER as ','"
-with open('./import/transfers.csv', 'r') as f:
-    cur.copy_expert(sql = SQL,  file = f)
-    conn.commit()
+#SQL = "COPY transit,request(asset_tag, requester, request_dt, approve_dt, src, dest, load_dt, unload_dt) FROM stdin WITH CSV HEADER DELIMITER as ','"
+#with open('./import/transfers.csv', 'r') as f:
+#    cur.copy_expert(sql = SQL,  file = f)
+#    conn.commit()
     
 
 #SQL = "COPY * FROM stdin WITH CSV HEADER DELIMITER as ','"

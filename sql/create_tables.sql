@@ -24,8 +24,8 @@ CREATE TABLE assets (
 
 CREATE TABLE facilities (
 	facility_pk serial NOT NULL UNIQUE,
-	common_name varchar(32) NOT NULL,
-	fcode varchar(6) NOT NULL
+	common_name varchar(32),
+	fcode varchar(6) 
 );
 
 /*Here, I am choosing to connect assets and facilities to an asset_at table.*/
@@ -34,7 +34,7 @@ CREATE TABLE asset_at (
 	asset_fk integer REFERENCES assets(asset_pk),
 	facility_fk integer REFERENCES facilities(facility_pk),
 	acquired_dt timestamp,
-	disposed boolean NOT NULL,
+	disposed boolean,
 	disposed_dt timestamp
 );
 
