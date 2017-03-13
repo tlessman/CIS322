@@ -193,12 +193,12 @@ def logout():
         
 # HELPERS #        
 def check_username(name):
-    SQL = "SELECT * FROM users WHERE username=%s;"
+    SQL = "SELECT username FROM users WHERE username=%s;"
     data = (name,)
     cur.execute(SQL, data)
-    user_res = cur.fetchall()
+    user_res = cur.fetchone()
     if bool(user_res):
-        if user_res['username'] = data:
+        if user_res['username'] == name:
             return True
         else:
             return False
