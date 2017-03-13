@@ -74,13 +74,13 @@ def suspend_user():
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method =='GET':
-        session['error'] = ""
+        session['msg'] = ""
         return render_template('login.html')
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
         if check_username(request.form['username']) == False:
-            session['error'] = "Username does not exist."
+            session['msg'] = "Username does not exist."
             return redirect(url_for('login'))
-        if verify_password(request.form['username'], request.form['password']) == True:
+        if verify_login(request.form['username'], request.form['password']) == True:
             session['username'] = request.form['username']
             cur.execute("SELECT role FROM users WHERE username = %s;"%(username))
             res = cur.fetchone()
@@ -88,7 +88,7 @@ def login():
             session['logged_in'] = True
             return redirect(url_for('dashboard'))
         else:
-            session['error'] = "Invalid password."
+            session['msg'] = "Invalid password."
             return redirect(url_for('login'))
     return render_template('login.html', dbname=dbname, dbhost=dbhost, dbport=dbport)
 #
@@ -98,13 +98,14 @@ def create_user():
     if request.method == 'GET':
         return render_template('create_user.html')
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form): 
-        if check_username(request.form['username']):
-            session['error'] = "Username already exists."
+        if check_usertaken(request.form['username'] == False):
+            session['msg'] = "Username already exists."
             return redirect(url_for('username_taken'))
         else:
             username = request.form['username']
             password = request.form['password']
             role = request.form['role']
+            session['msg'] = "Created a new user."
             cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(username,password,role))
             conn.commit() 
             return redirect(url_for('login')) 
@@ -154,7 +155,7 @@ def dispose_asset():
     if request.method == 'GET':
         return render_template('dispose_asset.html')
     if request.method == 'POST' and 'asset_tag' in request.form: #and session['role'] == 0:
-        session['error'] = ""
+        session['msg'] = ""
         tag = request.form['asset_tag']
         cur.execute("UPDATE assets SET disposed = 1 WHERE asset_tag = %s;"%(tag))
         conn.commit()
@@ -192,24 +193,19 @@ def logout():
 
         
 # HELPERS #        
-def check_username(name):
+def check_usertaken(name):
     SQL = "SELECT username FROM users WHERE username=%s;"
     data = (name,)
     cur.execute(SQL, data)
     user_res = cur.fetchone()
     if bool(user_res):
-        if user_res['username'] == name:
-            return True
-        else:
-            return False
-    else:
-        return False
+        return True
 #
 
-def verify_password(name, string):
-    cur.execute("SELECT password FROM users WHERE username = %s;"%(name))
-    user_res = cur.fetchone()
-    if user_res['password'] == string:
+def verify login(name, string):
+    cur.execute("SELECT username,password FROM users WHERE username = %s and password = %s;"%(name,string))
+    user_res = cur.fetchone()[0]
+    if user_res == 1:
         return True
     else:
         return False
