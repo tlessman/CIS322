@@ -1,0 +1,200 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				 ###   ###  #   #  ###   ####
+				#   # #     ##  # #   # #   #
+				#   #  ###  # # # ##### ####
+				#   #     # #  ## #   # #
+				 ###   ###  #   # #   # #
+	
+				 LOST  ASSET TRACKING SYSTEM
+				    Testing Documentation
+	
+
+				      Theodore Lessman
+
+
+
+
+
+
+	________ TABLE OF CONTENTS _______________________________________________________
+	
+		 i Pre-test Procedures: Installation and Setup
+		
+		 I Creating Initial Users
+
+	        II Logging into LOST
+ 
+	       III Adding Facilities
+
+	        IV Adding Assets
+
+		 V Completing Asset Transit Process
+
+	        VI Asset Disposal
+
+	       VII Generating Reports
+	__________________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+	________ i INSTALLATION AND SETUP ________________________________________________
+	
+	1 Using the OSNAP terminal, do the following commands to bring the servers online:
+		* initdb lost
+		* pg_ctl -D lost -l logfile start
+		* createdb [dbname]
+		* ./preflight.sh [dbname]
+		* apachectl start
+	
+	2 Navigate your browser to  http://127.0.0.1/  to begin testing.
+
+
+
+	________ I CREATING INITIAL USERS ________________________________________________
+	
+	* If there is not a 'Don't have an account?' link on the login page, go to  
+	http://127.0.0.1/rest/  for instructions on creating user accounts. After users 
+	are created, proceed to Section II: Logging Into Lost.
+	
+	1 Select the link 'Don't have an account?' to go to account creation page.
+
+	2 Add the following users/password combinations:
+		'User Added' - Log1  l1
+		'User Added' - Fac1  f1
+
+	3 Add the previous users a second time:
+		'Username Taken' - Log1  l2
+		'Username Taken' - Fac2  f2
+
+	4 Follow the link 'Already registered?' to return to login screen.
+
+
+
+	_______ II LOGGING INTO LOST _____________________________________________________
+
+	1 Attempt the following user/password combinations (username  password <-- expected):
+		- <blank>  <blank>  <-- DENY
+		- Unauth  ua  <-- DENY
+		- Log1  wrongpass  <-- DENY
+		- Log1  l1  <-- ALLOW
+		- Fac1  f1  <-- ALLOW
+	
+	* If you are granted access, click the link to logout to return to login 
+	screen.
+
+
+
+	______ III ADDING FACILITIES _____________________________________________________
+
+	1 Log into LOST as Fac1.
+
+	2 From the dashboard, choose 'Add Facilities'.
+
+	3 Enter the following facility information (fcode  common_name):
+		- BS-34  Black Site 34
+		- X-ARK  Exogenome Research Ark 
+
+	4 Return to the dashboard.
+
+
+
+	_______ IV ADDING ASSETS _________________________________________________________
+	
+	1 From the dashboard, choose 'Add Assets'.
+
+	2 Log into LOST as Log1.
+
+	3 From the dashboard, choose 'Add Assets'.
+
+	4 Enter the following asset information (asset_tag  description  location):
+		- SP-K005  Specimen Kamigawa 5  X-ARK
+		- BAE-Dx  BAE Systems Disintegration Platform  BS-34
+
+	5 Return to the dashboard.
+
+
+
+	________ V COMPLETING ASSET TRANSIT PROCESS ______________________________________
+
+	1 Log into LOST as Log1.
+
+	2 From the dashboard, choose 'Initiate Transfer Request'.
+
+	3 Enter the following transfer requests (asset_tag  src  dest <-- expected):
+		- NO-ID  BS-34  X-ARK <-- FAIL
+		- BAE-Dx  NO-SF  X-ARK <-- FAIL
+		- BAE-Dx  BS-34  NO-DS <-- FAIL
+		- BAE-Dx  X-ARK  BS-34 <-- FAIL
+		- BAE-Dx  BS-34  X-ARK <-- PASS
+		- SP-K005  X-ARK  BS-34 <-- PASS
+
+	4 Log out of LOST, then log in as Fac1.
+
+	5 From the dashboard, choose item from 'Pending Approval Requests':
+		- SELECT 'Approve' for SP-K005
+		- SELECT 'Deny' for BAE-Dx
+
+	6 Log out of LOST, then log in as Log1.
+
+	7 From the dashboard, choose item from 'Update Tracking Info':
+		- 
+
+
+
+	_______ VI ASSET DISPOSAL ________________________________________________________
+
+	1 Log into LOST as Log1.
+
+	2 From the dashboard, choose 'Dispose Assets'.
+
+	3 Dispose of SP-K005.
+
+
+
+	______ VII GENERATING REPORTS ____________________________________________________ 
+
+	1 Log into LOST as 
+
+	2 From the dashboard, choose 'Generate Asset Report'.
+
+	3 Enter the following filter and submit: (asset_tag  aquisition_dt <-- expected):
+		- <blank>  01/01/2017 <-- 2 FOUND
+		- <blank>  <today's date> 2 FOUND
+		- <blank>  <tomorrow's date> <-- EMPTY
+		- SP-K005  <yesterday's date> <-- FOUND
+		- SP-K005  <tomorrow's date> <-- EMPTY
+		- BAE-Dx  <yesterday's date> <-- FOUND
+		- BAE-Dx  <tomorrow's date> <-- EMPTY
+		
+	* If any results appear, make the following selections (fcode  aquisition_dt <-- expected):
+		- X-ARK  <today's date> <-- FOUND
+		- BS-34 <yesterday's date> <-- FOUND
+		- BS-34 <today's date> <-- FOUND
+		- BS-34 <tomorrow's date> <-- EMPTY
+	
+	4 
+
+
+
+	_________________________________________________________________END OF TEST______
