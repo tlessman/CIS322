@@ -121,7 +121,7 @@
 
 	_______ IV ADDING ASSETS _________________________________________________________
 	
-	1 From the dashboard, choose 'Add Assets'.
+	1 From the dashboard, choose 'Add Assets'. <-- FAIL
 
 	2 Log into LOST as Log1.
 
@@ -158,7 +158,10 @@
 	6 Log out of LOST, then log in as Log1.
 
 	7 From the dashboard, choose item from 'Update Tracking Info':
-		- 
+		- SELECT 'Load' for SP-K005
+		- SELECT 'Unload' for SP-K005
+
+	
 
 
 
@@ -170,15 +173,15 @@
 
 	3 Dispose of SP-K005.
 
+	4 Return to the dashboard.
+
 
 
 	______ VII GENERATING REPORTS ____________________________________________________ 
 
-	1 Log into LOST as 
+	1 From the dashboard, choose 'Generate Asset Report'.
 
-	2 From the dashboard, choose 'Generate Asset Report'.
-
-	3 Enter the following filter and submit: (asset_tag  aquisition_dt <-- expected):
+	2 Enter the following filter and submit: (asset_tag  aquisition_dt <-- expected):
 		- <blank>  01/01/2017 <-- 2 FOUND
 		- <blank>  <today's date> 2 FOUND
 		- <blank>  <tomorrow's date> <-- EMPTY
@@ -193,8 +196,7 @@
 		- BS-34 <today's date> <-- FOUND
 		- BS-34 <tomorrow's date> <-- EMPTY
 	
-	4 
-
+	3 Log out of LOST.
 
 
 	_________________________________________________________________END OF TEST______
