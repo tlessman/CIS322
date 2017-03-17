@@ -1,0 +1,110 @@
+TEST RESULTS BY TLESSMAN______________________________________________________________________________________________
+TESTING BW-DAVIS FROM testdoc/test_plan.pdf
+
+I noticed a big part of trying invalid inputs revolve around length of values put in.  You can limit the length in the DB (like you have), but you can also enforce it in the html tags so that it is impossible for them to add too many characters, which avoids running into ERR500.
+ex: <input type="password" maxlength="32" ... /> (i also realized there are couple of parts in my code which I forgot to enforce this.)
+
+KEY:
+	PASS working as expected
+	EXPECTED ERROR working as expected
+	SHOULD/NT PASS allows action when maybe it should/nt
+	ERR### returns an error to browser (ie ERR500.)
+
+
+Prerequisites:
+	IF I am understanding, this is stating that postgres and apache need to be installed?
+	Not sure if it is necessary to lay out steps leading up to running apache (ie initdb, preflight, apachectl start, etc)
+
+1 CREATE INITIAL USERS
+	Req: Listed requirements seem reasonable.  Eventually you may consider only offering a dropdown of acceptable roles, instead of requiring the user input correct values.
+	Steps: While not given explicit directions to do so, I assume I should attempt invalid inputs to see what happens.  Additionally, this does not direct to imput a role (and in fact when I do not, it still logs me in - verified DB with query and users exist without role assigned. (i think this can be enforced with NOT NULL designation on user.role_fk).
+	USERNAME           	PASSWORD  			        	ROLE			RESULT
+	userL			password					Logistics Officer	PASS
+	userF			password					Facilities Officer	PASS
+	wayTooLongOfAUsername	password					Logistics Officer	ERR500 
+	user			thisIsTheLongestPasswordThatIHaveEverSeen!	Logistics Officer	ERR500
+	user			password					<NO INPUT>		SHOULDNT PASS (no default role assigned, so user has no role)
+	userL			repeatUser					Logistics Officer	ERR500
+
+2 LOGIN TO THE SYSTEM
+	Req: Users created, while an invalid input is accepted, all valid inputs worked.
+	Steps: 
+	USERNAME		PASSWORD					RESULT
+	userL			password					PASS
+	userF			password					PASS
+	userF			wrongpassword					EXPECTED ERROR
+	notUser			password					EXPECTED ERROR
+	<NO INPUT>		<NO INPUT>					EXPECTED ERROR
+* for some reason, later on in the program, the dashboard hsaid "hello Brian!" which confused me since I have not added that as a user.  I could not find where, but you may possibly have your name hardcoded in somewhere.  This happened when returning from submenu back to dash.
+
+3 ADD TWO FACILITIES
+	Req: Able to login and get to screen.
+	Steps: 
+	COMMON NAME		FCODE			RESULT
+	Eugene			EUG			PASS (not redirected to dash)
+	Portland		PDX			PASS (not redirected to dash)
+	<NO INPUT>		NCN			SHOULDNT PASS (allows not having common name         )
+	NO FCODE		<NO INPUT>		SHOULDNT PASS (or fcode                              )
+	<NO INPUT>		<NO INPUT>		SHOULDNT PASS (adding NOT NULL to facilities may help)
+	..Namelongerthan32..	LONG			ERR500
+	Long Fcode		LONGFCODE		ERR500
+
+4 ADD TWO ASSETS
+	Req: Able to login and get to screen. Drop down has invalid values for FCODE from before. Will only use valid inputs.  ( [EUG] [PDX] [NCN] [   ] [   ] )
+	Steps: 
+	TAG		DESC		FCODE		RESULT
+	Cat		A Cat		EUG		PASS
+	Dog		A Dog		PDX		PASS
+	<NO INPUT>	A Nothing	EUG		SHOULDNT PASS	(enforcing NOT NULL may help)
+	No Description	<NO INPUT>	EUG		PASS (up to your model if you want to allow assets without description.)
+	..Long Name..	A long name	EUG		ERR500
+
+5.1 REQUEST ASSET TRANSFER
+	Req: as log officer, has fcode and assets that were invalid available, but those required are working.
+	Steps: *not redirecting to dashboard*
+	AS 	REQUEST NAME	ASSET	DEST	RESULT
+	Fac	unable to access		PASS
+	Log	able to access                  PASS
+		req1		Cat	PDX	PASS
+		req2		Dog	EUG	PASS 
+		samefac		Cat	EUG	EXPECTED ERROR
+
+5.2 APPROVE ASSET TRANSFER
+	Req: TEST PLAN (and app) lists required role as Log Officer - to my knowledge this should be Facilities.
+		No unexpected results from previous step. Additionally, request listing is hard to read what asset or facility is in play (assuming the approving officer is not familiar with what the logistics officer requested.) as only the request_name and *_fk are available.  (I am really bad at using foreign keys in queries, but using something like the following probably incorrect query should replace the fks with the names):
+SELECT fcode, asset_tag FROM request 
+JOIN facilities ON (facilities.facility_pk = request.dest_fk)
+JOIN assets ON (assets.asset_pk = request.asset_fk);
+(or something like that)
+	Steps: 
+	AS	REQ INDEX	CHOICE	 RESULT
+	Fac	unable to access	 SHOULD PASS
+	Log	able to access           SHOULDNT PASS
+		1		A	 PASS
+		2		D	 PASS (expected deletion)
+
+6 DISPOSE OF AN ASSET
+	Req: Meet requirements from previous steps.
+	ASSET	DISPOSE	RESULT
+	Dog	Y	ERR500 (not disposed in DB)
+
+7.1 RUN ASSET REPORT
+	Req: Meet requirements from previous steps.
+	Steps:
+	*link to asset report  says 'this is an asset report'
+
+7.2 RUN TRANSFER REPORT (OPT)
+	Req: Meet requirements, or can quickly add a request (i approved and denied both that I added)
+	Steps:
+	*link to transfer report says 'this is a transfer report'
+
+________________________________________________________________________________________END OF REPORT____________
+
+
+
+
+
+
+
+
+T
