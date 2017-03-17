@@ -22,7 +22,6 @@ app.secret_key='c34f5286bed45063'
 #dbport = 5432
 conn = psycopg2.connect(dbname=dbname, host=dbhost, port=dbport)
 cur = conn.cursor()
-#session['logged_in'] = FALSE
 
 # REST FUNCTIONS #
 @app.route('/rest')
@@ -39,7 +38,8 @@ def activate_user():
         req=json.loads(request.form['arguments'])
     else:
         return redirect(url_for('rest'))
-    ##if user exists and is inactive, do:
+    ##if user exists, do:
+    if user_available(req['username']) == False:
     cur.execute('SELECT * FROM users WHERE (username ~~* %s and active ==0;'%(req['username']))
     res = cur.fetchall()
     if res[user_pk]:
@@ -50,6 +50,9 @@ def activate_user():
         dat['result'] = 'OK'
         data = json.dumps(dat)
         return data
+    ##else create user
+    else:
+        cur.execute()
 
 @app.route('/rest/suspend_user', methods=['POST'])
 def suspend_user():
@@ -77,7 +80,7 @@ def login():
         session['msg'] = ""
         return render_template('login.html')
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
-        if check_username(request.form['username']) == False:
+        if user_available(request.form['username']) == True:
             session['msg'] = "Username does not exist."
             return redirect(url_for('login'))
         if verify_login(request.form['username'], request.form['password']) == True:
@@ -98,7 +101,7 @@ def create_user():
     if request.method == 'GET':
         return render_template('create_user.html')
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form): 
-        if check_usertaken(request.form['username'] == False):
+        if user_available(request.form['username'] == False):
             session['msg'] = "Username already exists."
             return redirect(url_for('username_taken'))
         else:
@@ -193,18 +196,18 @@ def logout():
 
         
 # HELPERS #        
-def check_usertaken(name):
+def user_available(name):
     SQL = "SELECT username FROM users WHERE username = %s;"
     data = (name,)
     cur.execute(SQL, data)
-    user_res = cur.fetchone()[0]
-    if user_res == 1:
-        return True
+    user_res = cur.fetchone()
+    if user_res['username'] == name:
+        return False
 #
 
 def verify_login(name, string):
     cur.execute("SELECT username,password FROM users WHERE username = %s and password = %s;"%(name,string))
-    user_res = cur.fetchone()[0]
+    user_res = cur.fetchone()
     if user_res == 1:
         return True
     else:
