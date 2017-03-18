@@ -87,19 +87,24 @@ def login():
         session['msg'] = ""
         return render_template('login.html')
     if request.method =='POST': #and ('username' in request.form and 'password' in request.form):
-        if user_available(request.form['username']) == True:
+        name = request.form['username']
+        pswd = request.form['password']
+        cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
+        ures = cur.fetchone()
+        if ures != 1:
             session['msg'] = "Username does not exist."
             return redirect(url_for('login'))
-        if verify_login(request.form['username'], request.form['password']) == True:
-            session['username'] = request.form['username']
-            cur.execute("SELECT role FROM users WHERE username = %s;"%(username))
-            res = cur.fetchone()
-            session['role'] = res
-            session['logged_in'] = True
-            return redirect(url_for('dashboard'))
-        else:
-            session['msg'] = "Invalid password."
+        cur.execute("SELECT 1 FROM users WHERE username = '%s', password = '%s';"%(name, pswd))
+        pres = cur.fetchone()
+        if pres['password'] != 1:
+            session['msg'] = "Invalid Password."
             return redirect(url_for('login'))
+        session['logged_in'] = True   
+        session['username'] = name
+        cur.execute("SELECT role FROM users WHERE username = '%s';"%(username))
+        rres = cur.fetchone()
+        session['role'] = rres
+        return redirect(url_for('dashboard'))
     return render_template('login.html', dbname=dbname, dbhost=dbhost, dbport=dbport)
 #
 
@@ -107,37 +112,41 @@ def login():
 def create_user():
     if request.method == 'GET':
         return render_template('create_user.html')
-    if request.method == 'POST' and ('username' in request.form and 'password' in request.form): 
-        if user_available(request.form['username'] == False):
-            session['msg'] = "Username already exists."
+    if request.method == 'POST' and ('username' in request.form and 'password' in request.form):  
+        name = request.form['username']
+        pswd = request.form['password']
+        cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
+        res = cur.fetchone()
+        if res != 0:
+            session['msg'] = "Username taken."
             return redirect(url_for('create_user'))
-        else:
-            username = request.form['username']
-            password = request.form['password']
-            role = request.form['role']
-            session['msg'] = "Created a new user."
-            cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(username,password,role))
-            conn.commit() 
-            return redirect(url_for('login')) 
-            
+        
+        name = request.form['username']
+        pswd = request.form['password']
+        role = request.form['role']
+        session['msg'] = "Created a new user."
+        cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(name,pswd,role))
+        conn.commit() 
+        return redirect(url_for('login')) 
+           
         #
     #
     return render_template('create_user.html')
 #
 
-@app.route('/username_taken', methods = ['GET', 'POST'])
-def username_taken():
-    if request.method == 'POST' and ('username' in request.form and 'password' in request.form):
-        if check_username(request.form['username']): 
-             return redirect(url_for('create_user'))
-        #
-    #
-    return render_template('create_user.html')
+#@app.route('/username_taken', methods = ['GET', 'POST'])
+#def username_taken():
+#    if request.method == 'POST' and ('username' in request.form and 'password' in request.form):
+#        if check_username(request.form['username']): 
+#             return redirect(url_for('create_user'))
+#       #
+#   #
+#   return render_template('create_user.html')
 #
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    #if session['logged_in'] == FALSE:
+    #if session['logged_in'] != True:
     #    session['error'] = "Unauthorized access."
     #    return redirect(url_for('login'))
     return render_template('dashboard.html')
@@ -155,10 +164,10 @@ def add_facility():
         return redirect(url_for('add_facility'))
     return render_template('login.html')
 
-@app.route('/asset_report', methods=['GET', 'POST'])
+#@app.route('/asset_report', methods=['GET', 'POST'])
 #def *():
 
-@app.route('/transfer_report', methods=['GET', 'POST'])
+#@app.route('/transfer_report', methods=['GET', 'POST'])
 #def *():
 
 @app.route('/dispose_asset', methods=['GET', 'POST'])
@@ -168,7 +177,7 @@ def dispose_asset():
     if request.method == 'POST' and 'asset_tag' in request.form: #and session['role'] == 0:
         session['msg'] = ""
         tag = request.form['asset_tag']
-        cur.execute("UPDATE assets SET disposed = 1 WHERE asset_tag = %s;"%(tag))
+        cur.execute("UPDATE assets SET disposed = 1 WHERE asset_tag = '%s';"%(tag))
         conn.commit()
         return redirect(url_for('dashboard'))
     #   
@@ -182,15 +191,12 @@ def add_asset():
     if request.method == 'POST' and ('asset_tag' in request.form and 'description' in request.form):
         asset_tag = request.form['asset_tag']
         description = request.form['description']
-        #facilty = request.form['facility']
+        facilty = request.form['facility']
         cur.execute("INSERT INTO assets (asset_pk, asset_tag, description) VALUES (DEFAULT, '%s', '%s');"%(asset_tag,description))
-#        cur.execute("INSERT INTO asset_status (asset_fk, facility_fk, arrival_dt, disposed) SELECT VALUES (
+        cur.execute("INSERT INTO asset_at ("%())
         conn.commit()
         return redirect(url_for('add_asset'))
     return render_template('login.html')
-
-@app.route('/dispose_asset', methods=['GET', 'POST'])
-#def *():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -204,21 +210,19 @@ def logout():
 
         
 # HELPERS #        
-def user_available(name):
-    SQL = "SELECT username FROM users WHERE username = %s;"
-    data = (name,)
-    cur.execute(SQL, data)
-    user_res = cur.fetchone()
-    if user_res['username'] == name:
-        return False
+#def user_available(name):
+#    cur.execute("SELECT count(*) FROM users WHERE username = %s;"%(name))
+#    user_res = cur.fetchone()[0]
+#    if user_res != 0:
+#        return False
+##
 #
-
-def verify_login(name, string):
-    cur.execute("SELECT count(*) FROM users WHERE username = %s and password = %s;"%(name,string))
-    user_res = cur.fetchone()[0]
-    if user_res != 1:
-        return False
-#
+#def verify_login(name, string):
+#    cur.execute("SELECT count(*) FROM users WHERE username = %s and password = %s;"%(name,string))
+#    user_res = cur.fetchone()[0]
+#    if user_res != 1:
+#        return False
+##
 
 if __name__=='__main__':
     app.run(host='0.0.0.0', port=8080)
