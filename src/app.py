@@ -40,19 +40,26 @@ def activate_user():
         return redirect(url_for('rest'))
     ##if user exists, do:
     if user_available(req['username']) == False:
-    cur.execute('SELECT * FROM users WHERE (username ~~* %s and active ==0;'%(req['username']))
-    res = cur.fetchall()
+        cur.execute('SELECT * FROM users WHERE username ~~* %s;'%(req['username']))
+        res = cur.fetchall()
     if res[user_pk]:
-        cur.execute('UPDATE users SET active = TRUE WHERE username == %s;'%(req['username']))
+        cur.execute('UPDATE users SET active = TRUE, password = %s WHERE username == %s;'%(req['password'], req['username']))
         conn.commit()
         dat = dict()
         dat['timestamp'] = req['timestamp']
-        dat['result'] = 'OK'
+        dat['result'] = 'USER ACTIVE AND PASSWORD UPDATED'
         data = json.dumps(dat)
         return data
     ##else create user
     else:
-        cur.execute()
+       cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(username,password,role))
+       conn.commit()
+       dat = dict()
+       dat['timestamp'] = req['timestamp']
+       dat['result'] = 'USER CREATED'
+       data = json.dumps(dat)
+       return data 
+        
 
 @app.route('/rest/suspend_user', methods=['POST'])
 def suspend_user():
@@ -61,8 +68,8 @@ def suspend_user():
     else:
         return redirect(url_for('rest'))
     ##if user exists and is active, do:
-    cur.execute('SELECT * FROM users WHERE (username ~~* %s and active ==1;'%(req['username']))
-    res = cur.fetchall()
+        cur.execute('SELECT * FROM users WHERE (username ~~* %s and active ==1;'%(req['username']))
+        res = cur.fetchall()
     if res[user_pk]:
         cur.execute('UPDATE users SET active = FALSE WHERE username == %s;'%(req['username']))
         conn.commit()
@@ -79,7 +86,7 @@ def login():
     if request.method =='GET':
         session['msg'] = ""
         return render_template('login.html')
-    if request.method =='POST' and ('username' in request.form and 'password' in request.form):
+    if request.method =='POST': #and ('username' in request.form and 'password' in request.form):
         if user_available(request.form['username']) == True:
             session['msg'] = "Username does not exist."
             return redirect(url_for('login'))
@@ -103,7 +110,7 @@ def create_user():
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form): 
         if user_available(request.form['username'] == False):
             session['msg'] = "Username already exists."
-            return redirect(url_for('username_taken'))
+            return redirect(url_for('create_user'))
         else:
             username = request.form['username']
             password = request.form['password']
@@ -112,6 +119,7 @@ def create_user():
             cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(username,password,role))
             conn.commit() 
             return redirect(url_for('login')) 
+            
         #
     #
     return render_template('create_user.html')
@@ -206,11 +214,9 @@ def user_available(name):
 #
 
 def verify_login(name, string):
-    cur.execute("SELECT username,password FROM users WHERE username = %s and password = %s;"%(name,string))
-    user_res = cur.fetchone()
-    if user_res == 1:
-        return True
-    else:
+    cur.execute("SELECT count(*) FROM users WHERE username = %s and password = %s;"%(name,string))
+    user_res = cur.fetchone()[0]
+    if user_res != 1:
         return False
 #
 
