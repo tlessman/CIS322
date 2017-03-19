@@ -87,11 +87,15 @@ def login():
     
     session['username'] = ""
     session['role'] = ""
+    print('pre-log')
     if request.method =='GET':
-        return render_template('login.html')
+        print('get')
+        return render_template('login.html')    
     if request.method =='POST' and ('username' in request.form and 'password' in request.form):
+        print('post')
         name = request.form['username']
         pswd = request.form['password']
+        print(name+" "+pswd)
         #cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
         #ures = cur.fetchone()
         #if ures != 1:
@@ -107,7 +111,7 @@ def login():
         cur.execute("SELECT role FROM users WHERE username = '%s';"%(name))
         rres = cur.fetchone()
         session['role'] = rres
-        return redirect(url_for('dashboard'))
+        return render_template('dashboard.html')
     return render_template('login.html', dbname=dbname, dbhost=dbhost, dbport=dbport)
 #
 
@@ -148,9 +152,11 @@ def create_user():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    if session['logged_in'] != True:
+    if 'logged_in' in session:
+        return render_template('dashboard.html')
+    elif 'logged_in' not in session:
         session['msg'] = "Unauthorized access."
-        return redirect(url_for('login'))
+        return render_template('login.html')
     return render_template('dashboard.html')
 
 @app.route('/add_facility', methods=['GET','POST'])
