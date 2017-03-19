@@ -83,25 +83,28 @@ def suspend_user():
 @app.route('/')
 @app.route('/login', methods=['GET','POST'])
 def login():
+    session['msg'] = ""
+    
+    session['username'] = ""
+    session['role'] = ""
     if request.method =='GET':
-        session['msg'] = ""
         return render_template('login.html')
-    if request.method =='POST': #and ('username' in request.form and 'password' in request.form):
+    if request.method =='POST' and ('username' in request.form and 'password' in request.form):
         name = request.form['username']
         pswd = request.form['password']
-        cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
-        ures = cur.fetchone()
-        if ures != 1:
-            session['msg'] = "Username does not exist."
-            return redirect(url_for('login'))
-        cur.execute("SELECT 1 FROM users WHERE username = '%s', password = '%s';"%(name, pswd))
-        pres = cur.fetchone()
-        if pres['password'] != 1:
-            session['msg'] = "Invalid Password."
-            return redirect(url_for('login'))
+        #cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
+        #ures = cur.fetchone()
+        #if ures != 1:
+        #    session['msg'] = "Username does not exist."
+        #    return redirect(url_for('login'))
+        #cur.execute("SELECT 1 FROM users WHERE username = '%s', password = '%s';"%(name, pswd))
+        #pres = cur.fetchone()
+        #if pres['password'] != 1:
+        #    session['msg'] = "Invalid Password."
+        #    return redirect(url_for('login'))
         session['logged_in'] = True   
         session['username'] = name
-        cur.execute("SELECT role FROM users WHERE username = '%s';"%(username))
+        cur.execute("SELECT role FROM users WHERE username = '%s';"%(name))
         rres = cur.fetchone()
         session['role'] = rres
         return redirect(url_for('dashboard'))
@@ -113,21 +116,20 @@ def create_user():
     if request.method == 'GET':
         return render_template('create_user.html')
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form):  
-        name = request.form['username']
-        pswd = request.form['password']
-        cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
-        res = cur.fetchone()
-        if res != 0:
-            session['msg'] = "Username taken."
-            return redirect(url_for('create_user'))
-        
+        #name = request.form['username']
+        #pswd = request.form['password']
+        #cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
+        #res = cur.fetchone()
+        #if res == 1:
+        #    session['msg'] = "Username taken."
+        #    return redirect(url_for('create_user'))
         name = request.form['username']
         pswd = request.form['password']
         role = request.form['role']
         session['msg'] = "Created a new user."
         cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(name,pswd,role))
         conn.commit() 
-        return redirect(url_for('login')) 
+        return redirect(url_for('create_user')) 
            
         #
     #
@@ -146,9 +148,9 @@ def create_user():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    #if session['logged_in'] != True:
-    #    session['error'] = "Unauthorized access."
-    #    return redirect(url_for('login'))
+    if session['logged_in'] != True:
+        session['msg'] = "Unauthorized access."
+        return redirect(url_for('login'))
     return render_template('dashboard.html')
 
 @app.route('/add_facility', methods=['GET','POST'])
