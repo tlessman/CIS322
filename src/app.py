@@ -34,16 +34,17 @@ def rest():
 
 @app.route('/rest/activate_user', methods=['POST'])
 def activate_user():
+    print("got to activate user")
     if request.method =='POST' and 'arguments' in request.form:
         req=json.loads(request.form['arguments'])
     else:
         return redirect(url_for('rest'))
     ##if user exists, do:
     if user_available(req['username']) == False:
-        cur.execute('SELECT * FROM users WHERE username ~~* %s;'%(req['username']))
+        print("in user exists")
+        cur.execute( "SELECT * FROM users WHERE username ~~* %s;", (req['username'],) )
         res = cur.fetchall()
-    if res[user_pk]:
-        cur.execute('UPDATE users SET active = TRUE, password = %s WHERE username == %s;'%(req['password'], req['username']))
+        cur.execute('UPDATE users SET active = TRUE, password = %s WHERE username = %s;', (req['password'], req['username']) )
         conn.commit()
         dat = dict()
         dat['timestamp'] = req['timestamp']
@@ -52,7 +53,8 @@ def activate_user():
         return data
     ##else create user
     else:
-       cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(username,password,role))
+       print("in new user")
+       cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(req['username'],req['password'],req['role']))
        conn.commit()
        dat = dict()
        dat['timestamp'] = req['timestamp']
@@ -68,25 +70,25 @@ def suspend_user():
     else:
         return redirect(url_for('rest'))
     ##if user exists and is active, do:
-        cur.execute('SELECT * FROM users WHERE (username ~~* %s and active ==1;'%(req['username']))
-        res = cur.fetchall()
-    if res[user_pk]:
-        cur.execute('UPDATE users SET active = FALSE WHERE username == %s;'%(req['username']))
+        cur.execute('SELECT * FROM users WHERE (username ~~* %s and active ==1);',(req['username'],))
+        res = cur.fetchone()
+        cur.execute('UPDATE users SET active = FALSE WHERE username == %s;',(req['username'],))
         conn.commit()
         dat = dict()
         dat['timestamp'] = req['timestamp']
-        dat['result'] = 'OK'
+        dat['result'] = 'USER SUSPENDED'
         data = json.dumps(dat)
-        return data
+        return 'USER SUSPENDED'
+    return 'UNSUCCESSFUL'
 
 # PATHS #
 @app.route('/')
 @app.route('/login', methods=['GET','POST'])
 def login():
-    session['msg'] = ""
-    
     session['username'] = ""
     session['role'] = ""
+    if 'msg' not in session:
+        session['msg'] = ""
     print('pre-log')
     if request.method =='GET':
         print('get')
@@ -96,22 +98,26 @@ def login():
         name = request.form['username']
         pswd = request.form['password']
         print(name+" "+pswd)
-        #cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
-        #ures = cur.fetchone()
-        #if ures != 1:
-        #    session['msg'] = "Username does not exist."
-        #    return redirect(url_for('login'))
-        #cur.execute("SELECT 1 FROM users WHERE username = '%s', password = '%s';"%(name, pswd))
-        #pres = cur.fetchone()
-        #if pres['password'] != 1:
-        #    session['msg'] = "Invalid Password."
-        #    return redirect(url_for('login'))
-        session['logged_in'] = True   
-        session['username'] = name
-        cur.execute("SELECT role FROM users WHERE username = '%s';"%(name))
-        rres = cur.fetchone()
-        session['role'] = rres
-        return render_template('dashboard.html')
+        if user_available(name) == True:
+            session['msg'] = "Username does not exist."
+            return redirect(url_for('login'))
+        cur.execute("SELECT password FROM users WHERE (username = %s and password = %s);",(name, pswd))
+        res = cur.fetchone() 
+        if res != pswd: 
+            session['msg'] = "Invalid password."
+            return redirect(url_for('login'))
+        else:    
+            cur.execute("SELECT active FROM users WHERE username = %s;",(name,))
+            res = cur.fetchone()
+            if res == False:
+                session['msg'] = "User not authorized."
+                return redirect(url_for('login'))
+            session['logged_in'] = True   
+            session['username'] = name
+            cur.execute("SELECT role FROM users WHERE username = '%s';"%(name))
+            res = cur.fetchone()
+            session['role'] = res
+            return redirect(url_for('dashboard'))
     return render_template('login.html', dbname=dbname, dbhost=dbhost, dbport=dbport)
 #
 
@@ -120,13 +126,13 @@ def create_user():
     if request.method == 'GET':
         return render_template('create_user.html')
     if request.method == 'POST' and ('username' in request.form and 'password' in request.form):  
-        #name = request.form['username']
-        #pswd = request.form['password']
-        #cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
-        #res = cur.fetchone()
-        #if res == 1:
-        #    session['msg'] = "Username taken."
-        #    return redirect(url_for('create_user'))
+        name = request.form['username']
+        pswd = request.form['password']
+        cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
+        res = cur.fetchone()
+        if res == 1:
+            session['msg'] = "Username taken."
+            return redirect(url_for('create_user'))
         name = request.form['username']
         pswd = request.form['password']
         role = request.form['role']
@@ -153,7 +159,7 @@ def create_user():
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if 'logged_in' in session:
-        return render_template('dashboard.html')
+        return redirect(url_for('dashboard'))
     elif 'logged_in' not in session:
         session['msg'] = "Unauthorized access."
         return render_template('login.html')
@@ -218,11 +224,13 @@ def logout():
 
         
 # HELPERS #        
-#def user_available(name):
-#    cur.execute("SELECT count(*) FROM users WHERE username = %s;"%(name))
-#    user_res = cur.fetchone()[0]
-#    if user_res != 0:
-#        return False
+def user_available(name):
+    cur.execute("SELECT * FROM users WHERE username = %s;", (name,) )
+    user_res = cur.fetchone()
+    if user_res is None:
+        return True
+    else:
+        return False
 ##
 #
 #def verify_login(name, string):
