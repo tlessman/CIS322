@@ -27,7 +27,7 @@ def main():
     # Setup the data to send
     sargs = dict()
     sargs[arguments]=json.dumps(args)
-    sargs[signature]=
+    sargs[signature]=''
     data = urlencode(sargs)
     #print("sending:\n%s"%data)
     
@@ -42,6 +42,6 @@ def main():
     print("Call to LOST returned: %s"%resp[result])
     
 
-if __name__==__main__:
-    main()
+#if __name__==__main__:
+#    main()
     
