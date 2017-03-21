@@ -2,11 +2,22 @@
 	<body>
 		<h1>OSNAP</h1>
 		<h3>LOST Asset Tracking System</h3>
+		<table><tr><td><a href={{url_for('dashboard')}}>Return</a></td><td><a href={{url_for('logout')}}>Logout</a></td></tr></table>
+
+		<p><span style="color=red">{{session.msg}}</span></p>
+		Logged in as: {{session.username}}
+		
 		<table><form action={{url_for('add_asset')}} method="POST">
 				<p>LOST knows of the following assets: </p>
 			<tr><th>Add a new asset:</th></tr>
 			<tr><td><input type='text' name='asset_tag' placeholder='DMNP100-y' cols="16" maxlength="16"/></td></tr>
 			<tr><td><input type='text' name='description' placeholder='Dunder Mifflin Notepad 100pg, yellow' cols="64" maxlength="64"/></td></tr>		
+			<!--<tr><td><select name='facility'>
+				{% for fcode in facilities %}
+					<option value='{{facilities[2]}}'>{{facilities[1]}}</option>
+				{% endfor %}
+			</select></td></tr>-->
+			<tr><td><input type='text' name='facility' placeholder='OFFICE' cols="16" maxlength="6"/></td></tr>
 			<tr><td><button type="submit">Add asset to LOST</button></td></tr>
 		</form></table>
 	</body>

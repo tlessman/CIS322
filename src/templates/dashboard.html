@@ -1,9 +1,12 @@
 <html>
 	<body>
-	<h1>OSNAP</h1><a href={{url_for('logout')}}>logout</a>
+	<h1>OSNAP</h1>
 	<h3>LOST Asset Tracking System</h3>
-	<p><span style="color=red"></span></p>
+	<a href={{url_for('logout')}}>Logout</a>
+
+	<p><span style="color=red">{{session.msg}}</span></p>
 	Logged in as: {{session.username}}
+	
 	<table><tr><th>Officer Actions:</th>
 	<th><a href=http://127.0.0.1:8080/add_facility>Add Facility</a></th>
 	<th><a href=http://127.0.0.1:8080/add_asset>Add Asset</a></th>

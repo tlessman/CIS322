@@ -10,9 +10,10 @@ WHERE disposed = FALSE;"""
 
 from flask import Flask, render_template, request, session, redirect, url_for
 from config import dbname, dbhost, dbport
+from jinja2 import Template
 import psycopg2
 import json
-from datetime import datetime
+import datetime
 
 # GLOBALS #
 app = Flask(__name__)
@@ -53,14 +54,14 @@ def activate_user():
         return data
     ##else create user
     else:
-       print("in new user")
-       cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(req['username'],req['password'],req['role']))
-       conn.commit()
-       dat = dict()
-       dat['timestamp'] = req['timestamp']
-       dat['result'] = 'USER CREATED'
-       data = json.dumps(dat)
-       return data 
+        print("in new user")
+        cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(req['username'],req['password'],req['role']))
+        conn.commit()
+        dat = dict()
+        dat['timestamp'] = req['timestamp']
+        dat['result'] = 'USER CREATED'
+        data = json.dumps(dat)
+        return data 
         
 
 @app.route('/rest/suspend_user', methods=['POST'])
@@ -101,49 +102,57 @@ def login():
         if user_available(name) == True:
             session['msg'] = "Username does not exist."
             return redirect(url_for('login'))
-        cur.execute("SELECT password FROM users WHERE (username = %s and password = %s);",(name, pswd))
+        cur.execute("SELECT password FROM users WHERE (username = %s);",(name,))
         res = cur.fetchone() 
-        if res != pswd: 
-            session['msg'] = "Invalid password."
-            return redirect(url_for('login'))
-        else:    
+        print(res)
+        print(pswd)
+        pres = res[0]
+        print(pres)
+        if pres == pswd: 
             cur.execute("SELECT active FROM users WHERE username = %s;",(name,))
             res = cur.fetchone()
-            if res == False:
+            print(res)
+            sres = res[0]
+            if sres == False:
                 session['msg'] = "User not authorized."
                 return redirect(url_for('login'))
             session['logged_in'] = True   
             session['username'] = name
             cur.execute("SELECT role FROM users WHERE username = '%s';"%(name))
             res = cur.fetchone()
-            session['role'] = res
+            rres = res[0]
+            session['role'] = rres
+            session['msg'] = ''
             return redirect(url_for('dashboard'))
+        session['msg'] = "Invalid password."
+        return redirect(url_for('login'))           
     return render_template('login.html', dbname=dbname, dbhost=dbhost, dbport=dbport)
 #
 
 @app.route('/create_user', methods=['GET','POST'])
 def create_user():
-    if request.method == 'GET':
-        return render_template('create_user.html')
-    if request.method == 'POST' and ('username' in request.form and 'password' in request.form):  
-        name = request.form['username']
-        pswd = request.form['password']
-        cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
-        res = cur.fetchone()
-        if res == 1:
-            session['msg'] = "Username taken."
-            return redirect(url_for('create_user'))
-        name = request.form['username']
-        pswd = request.form['password']
-        role = request.form['role']
-        session['msg'] = "Created a new user."
-        cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(name,pswd,role))
-        conn.commit() 
-        return redirect(url_for('create_user')) 
-           
-        #
-    #
-    return render_template('create_user.html')
+    return redirect(url_for('rest'))    
+#    if request.method == 'GET':
+#        session['msg'] = ''
+#        return render_template('create_user.html')
+#    if request.method == 'POST' and ('username' in request.form and 'password' in request.form):  
+#        name = request.form['username']
+#        pswd = request.form['password']
+#        cur.execute("SELECT 1 FROM users WHERE username = '%s';"%(name))
+#        res = cur.fetchone()
+#        if res == 1:
+#            session['msg'] = "Username taken."
+#            return redirect(url_for('create_user'))
+#       name = request.form['username']
+#        pswd = request.form['password']
+#        role = request.form['role']
+#        session['msg'] = "Created a new user."
+#        cur.execute("INSERT INTO users (user_pk, username, password, role, active) VALUES (DEFAULT, '%s', '%s', '%s', TRUE);"%(name,pswd,role))
+#        conn.commit() 
+#        return redirect(url_for('create_user')) 
+#        #
+#    #
+##    return render_template('create_user.html')
 #
 
 #@app.route('/username_taken', methods = ['GET', 'POST'])
@@ -158,9 +167,7 @@ def create_user():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    if 'logged_in' in session:
-        return redirect(url_for('dashboard'))
-    elif 'logged_in' not in session:
+    if 'logged_in' not in session:
         session['msg'] = "Unauthorized access."
         return render_template('login.html')
     return render_template('dashboard.html')
@@ -168,6 +175,7 @@ def dashboard():
 @app.route('/add_facility', methods=['GET','POST'])
 def add_facility():
     if request.method == 'GET':
+        session['msg'] = ''
         return render_template('add_facility.html')
     if request.method == 'POST' and ('fcode' in request.form and 'common_name' in request.form):
         #SQL
@@ -175,11 +183,17 @@ def add_facility():
         common_name = request.form['common_name']
         cur.execute("INSERT INTO facilities (facility_pk, fcode, common_name) VALUES (DEFAULT, '%s', '%s');"%(fcode,common_name))
         conn.commit()
-        return redirect(url_for('add_facility'))
+        session['msg'] = 'Facility Added'
+        return redirect(url_for('dashboard'))
     return render_template('login.html')
 
-#@app.route('/asset_report', methods=['GET', 'POST'])
-#def *():
+@app.route('/asset_report', methods=['GET', 'POST'])
+def asset_report():
+    if request.method == 'GET':
+        return render_template('asset_report.html')
+    if request.method == 'POST':
+        return redirect(url_for('asset_report'))
+    return render_template('asset_report.html.html')
 
 #@app.route('/transfer_report', methods=['GET', 'POST'])
 #def *():
@@ -187,29 +201,63 @@ def add_facility():
 @app.route('/dispose_asset', methods=['GET', 'POST'])
 def dispose_asset():
     if request.method == 'GET':
+        if session.get('role') != 0:
+            session['msg'] = 'Asset disposal only available to Logistics Officers'
+            return redirect(url_for('dashboard'))
+        session['msg'] = ''
         return render_template('dispose_asset.html')
     if request.method == 'POST' and 'asset_tag' in request.form: #and session['role'] == 0:
-        session['msg'] = ""
         tag = request.form['asset_tag']
-        cur.execute("UPDATE assets SET disposed = 1 WHERE asset_tag = '%s';"%(tag))
+        timestamp = datetime.datetime.utcnow().isoformat()
+        cur.execute("SELECT asset_pk FROM assets WHERE asset_tag = %s",(tag,))
+        res = cur.fetchone()
+        ares = res[0]
+        cur.execute("UPDATE asset_at SET disposed = %s, disposed_dt = %s WHERE asset_fk = %s;", (True, timestamp, ares))
         conn.commit()
+        session['msg'] = 'Asset Disposed'
         return redirect(url_for('dashboard'))
+    return render_template('login.html')
     #   
 @app.route('/transfer_req', methods=['GET', 'POST'])
-#def *():
+def transfer_req():
+    if request.method == 'GET':
+        if session.get('role') != 0:
+            session['msg'] = 'Transfer Request only available to Logistics Users'
+            return redirect(url_for('dashboard'))
+        session['msg'] = ''
+        return render_template('transfer_req.html')
+    if request.method == 'POST':
+        return redirect(url_for('transfer_req'))
+    return render_template('transfer_req.html')
 
 @app.route('/add_asset', methods=['GET', 'POST'])
 def add_asset():
     if request.method == 'GET':
+        session['msg'] = ''
+        cur.execute("SELECT fcode FROM facilities;")
+        res = cur.fetchall()
+        session['fcodes'] = res
+        cur.execute("SELECT common_name FROM facilities;")
+        res = cur.fetchall()
+        session['facilities'] = res
         return render_template('add_asset.html')
     if request.method == 'POST' and ('asset_tag' in request.form and 'description' in request.form):
         asset_tag = request.form['asset_tag']
         description = request.form['description']
-        facilty = request.form['facility']
+        facility = request.form['facility']
+        timestamp = datetime.datetime.utcnow().isoformat()
         cur.execute("INSERT INTO assets (asset_pk, asset_tag, description) VALUES (DEFAULT, '%s', '%s');"%(asset_tag,description))
-        cur.execute("INSERT INTO asset_at ("%())
         conn.commit()
-        return redirect(url_for('add_asset'))
+        cur.execute("SELECT asset_pk FROM assets WHERE asset_tag = %s;", (asset_tag,))
+        res = cur.fetchone()
+        ares = res[0]
+        cur.execute("SELECT facility_pk FROM facilities WHERE fcode = %s;", (facility,))
+        res = cur.fetchone()
+        fres = res[0]
+        cur.execute("INSERT INTO asset_at (asset_fk, facility_fk, acquired_dt, disposed) VALUES (%s, %s, %s, %s);", (ares, fres, timestamp, False))
+        conn.commit()
+        session['msg'] = 'Asset Added'
+        return redirect(url_for('dashboard'))
     return render_template('login.html')
 
 @app.route('/logout', methods=['GET', 'POST'])

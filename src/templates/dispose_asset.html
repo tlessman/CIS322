@@ -2,6 +2,11 @@
 	<body>
 		<h1>OSNAP</h1>
 		<h3>LOST Asset Tracking System</h3>
+		<table><tr><td><a href={{url_for('dashboard')}}>Return</a></td><td><a href={{url_for('logout')}}>Logout</a></td></tr></table>
+
+		<p><span style="color=red">{{session.msg}}</span></p>
+		Logged in as: {{session.username}}
+		
 		<table><form action={{url_for('dispose_asset')}} method="POST">
 			<tr><th>Dispose of an existing asset:</th></tr>
 			<tr><td><input type='text' name='asset_tag' placeholder='DMNP100-y' cols="16" maxlength="16"/></td></tr>
